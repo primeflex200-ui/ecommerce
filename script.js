@@ -7,7 +7,6 @@ const productImages = {
     3: 'images/gomutra.png',
     4: 'images/cow-dung.png',
     5: 'images/panchagavya.png',
-    6: 'images/curd.png',
     7: 'images/buttermilk.png',
     8: 'images/paneer.png',
     9: 'images/gomutra.png'
@@ -473,7 +472,6 @@ function getShopProducts() {
         { id: 3, name: "Gomutra Ark", category: "Conscious Living", subcategory: "Herbal Products", price: 299, image: "images/gomutra.png", description: "Traditional wellness product from cow urine", inStock: true },
         { id: 4, name: "Organic Dung Cakes", category: "Home Food", subcategory: "Traditional Foods", price: 199, image: "images/cow-dung.png", description: "Eco-friendly organic dung cakes for traditional use", inStock: true },
         { id: 5, name: "Panchagavya Mix", category: "Special Categories", subcategory: "Combo Packs", price: 499, image: "images/panchagavya.png", description: "Complete wellness solution with five cow products", inStock: true },
-        { id: 6, name: "Fresh Curd", category: "Bakery & Dairy", subcategory: "Milk", price: 75, image: "images/curd.png", description: "Fresh homemade curd from organic milk", inStock: true },
         { id: 7, name: "Fresh Buttermilk", category: "Snacks & More", subcategory: "Traditional Snacks", price: 45, image: "images/buttermilk.png", description: "Refreshing traditional buttermilk", inStock: true },
         { id: 8, name: "Fresh Paneer", category: "Bakery & Dairy", subcategory: "Paneer", price: 350, image: "images/paneer.png", description: "Fresh cottage cheese made from organic milk", inStock: true },
         { id: 9, name: "Pure Gomutra", category: "Conscious Living", subcategory: "Herbal Products", price: 150, image: "images/gomutra.png", description: "Pure cow urine for traditional wellness", inStock: true }
