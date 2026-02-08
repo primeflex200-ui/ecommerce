@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear Cache</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2e7d32;
+            margin-bottom: 1rem;
+        }
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: #4a7c59;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            margin-top: 1rem;
+            font-weight: 600;
+        }
+        .btn:hover {
+            background: #3d6849;
+        }
+        .success {
+            color: #2e7d32;
+            font-size: 1.2rem;
+            margin: 1rem 0;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Clear Browser Cache</h1>
+        <p>Click the button below to clear all cached product data</p>
+        <button class="btn" onclick="clearCache()">Clear Cache Now</button>
+        <p class="success" id="success-msg">✓ Cache cleared successfully!</p>
+        <br><br>
+        <a href="index.html" class="btn">Go to Home Page</a>
+    </div>
+
+    <script>
+        function clearCache() {
+            // Clear localStorage
+            localStorage.clear();
+            
+            // Clear sessionStorage
+            sessionStorage.clear();
+            
+            // Show success message
+            document.getElementById('success-msg').style.display = 'block';
+            
+            // Reload after 1 second
+            setTimeout(() => {
+                alert('Cache cleared! The page will now reload with fresh data.');
+                window.location.reload(true);
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
