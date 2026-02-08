@@ -1,3 +1,23 @@
+// ===== TEMPORARY RESET LOGIC - REMOVE MILK AND CURD PRODUCTS =====
+// This will force clear old product data and reinitialize without milk/curd
+(function() {
+    const RESET_FLAG = 'products_reset_v2';
+    
+    // Check if reset has already been done
+    if (!localStorage.getItem(RESET_FLAG)) {
+        console.log('Admin: Resetting products - removing milk and curd...');
+        
+        // Clear old product data
+        localStorage.removeItem('products');
+        
+        // Mark reset as complete
+        localStorage.setItem(RESET_FLAG, 'true');
+        
+        console.log('Admin: Products reset complete.');
+    }
+})();
+// ===== END RESET LOGIC =====
+
 // Check admin authentication
 function checkAdminAuth() {
     const isLoggedIn = localStorage.getItem('adminLoggedIn');

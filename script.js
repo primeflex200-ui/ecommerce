@@ -1,3 +1,36 @@
+// ===== TEMPORARY RESET LOGIC - REMOVE MILK AND CURD PRODUCTS =====
+// This will force clear old product data and reinitialize without milk/curd
+(function() {
+    const RESET_FLAG = 'products_reset_v2';
+    
+    // Check if reset has already been done
+    if (!localStorage.getItem(RESET_FLAG)) {
+        console.log('Resetting products - removing milk and curd...');
+        
+        // Clear old product data
+        localStorage.removeItem('products');
+        
+        // Set correct products without milk (id:2) and curd (id:6)
+        const correctProducts = [
+            { id: 1, name: "Premium A2 Ghee", category: "Bakery & Dairy", subcategory: "Ghee", price: 899, stock: 50, image: "images/ghee.png", description: "Pure A2 cow ghee", inStock: true },
+            { id: 3, name: "Gomutra Ark", category: "Conscious Living", subcategory: "Herbal Products", price: 299, stock: 30, image: "images/gomutra.png", description: "Traditional wellness", inStock: true },
+            { id: 4, name: "Organic Dung Cakes", category: "Home Food", subcategory: "Traditional Foods", price: 199, stock: 0, image: "images/cow-dung.png", description: "Eco-friendly", inStock: false },
+            { id: 5, name: "Panchagavya Mix", category: "Special Categories", subcategory: "Combo Packs", price: 499, stock: 25, image: "images/panchagavya.png", description: "Complete wellness", inStock: true },
+            { id: 7, name: "Fresh Buttermilk", category: "Snacks & More", subcategory: "Traditional Snacks", price: 45, stock: 60, image: "images/buttermilk.png", description: "Refreshing", inStock: true },
+            { id: 8, name: "Fresh Paneer", category: "Bakery & Dairy", subcategory: "Paneer", price: 350, stock: 40, image: "images/paneer.png", description: "Fresh paneer", inStock: true },
+            { id: 9, name: "Pure Gomutra", category: "Conscious Living", subcategory: "Herbal Products", price: 150, stock: 20, image: "images/gomutra.png", description: "Pure wellness", inStock: true }
+        ];
+        
+        localStorage.setItem('products', JSON.stringify(correctProducts));
+        
+        // Mark reset as complete
+        localStorage.setItem(RESET_FLAG, 'true');
+        
+        console.log('Products reset complete. Milk and Curd removed.');
+    }
+})();
+// ===== END RESET LOGIC =====
+
 // Cart functionality
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
