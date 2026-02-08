@@ -4,7 +4,6 @@ let cart = JSON.parse(localStorage.getItem('cart')) || [];
 // Product image mapping
 const productImages = {
     1: 'images/ghee.png',
-    2: 'images/milk.png',
     3: 'images/gomutra.png',
     4: 'images/cow-dung.png',
     5: 'images/panchagavya.png',
@@ -471,7 +470,6 @@ function getShopProducts() {
     // Fallback to default products if no admin products exist
     const defaultProducts = [
         { id: 1, name: "Premium A2 Ghee", category: "Bakery & Dairy", subcategory: "Ghee", price: 899, image: "images/ghee.png", description: "Pure A2 cow ghee made using traditional bilona method", inStock: true },
-        { id: 2, name: "Fresh Cow Milk", category: "Bakery & Dairy", subcategory: "Milk", price: 65, image: "images/milk.png", description: "Fresh organic cow milk delivered daily", inStock: true },
         { id: 3, name: "Gomutra Ark", category: "Conscious Living", subcategory: "Herbal Products", price: 299, image: "images/gomutra.png", description: "Traditional wellness product from cow urine", inStock: true },
         { id: 4, name: "Organic Dung Cakes", category: "Home Food", subcategory: "Traditional Foods", price: 199, image: "images/cow-dung.png", description: "Eco-friendly organic dung cakes for traditional use", inStock: true },
         { id: 5, name: "Panchagavya Mix", category: "Special Categories", subcategory: "Combo Packs", price: 499, image: "images/panchagavya.png", description: "Complete wellness solution with five cow products", inStock: true },

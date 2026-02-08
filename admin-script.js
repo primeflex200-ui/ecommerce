@@ -14,7 +14,6 @@ function initializeAdminData() {
     if (!localStorage.getItem('products')) {
         const defaultProducts = [
             { id: 1, name: "Premium A2 Ghee", category: "Bakery & Dairy", subcategory: "Ghee", price: 899, stock: 50, image: "images/ghee.png", description: "Pure A2 cow ghee", inStock: true },
-            { id: 2, name: "Fresh Cow Milk", category: "Bakery & Dairy", subcategory: "Milk", price: 65, stock: 100, image: "images/milk.png", description: "Fresh organic milk", inStock: true },
             { id: 3, name: "Gomutra Ark", category: "Conscious Living", subcategory: "Herbal Products", price: 299, stock: 30, image: "images/gomutra.png", description: "Traditional wellness", inStock: true },
             { id: 4, name: "Organic Dung Cakes", category: "Home Food", subcategory: "Traditional Foods", price: 199, stock: 0, image: "images/cow-dung.png", description: "Eco-friendly", inStock: false },
             { id: 5, name: "Panchagavya Mix", category: "Special Categories", subcategory: "Combo Packs", price: 499, stock: 25, image: "images/panchagavya.png", description: "Complete wellness", inStock: true },
@@ -40,8 +39,8 @@ function initializeAdminData() {
             { 
                 id: "CB" + (Date.now() - 100000).toString().slice(-6), 
                 customerName: "Priya Patel", 
-                items: [{ name: "Fresh Cow Milk", quantity: 5, price: 65 }], 
-                total: 325, 
+                items: [{ name: "Premium A2 Ghee", quantity: 2, price: 899 }], 
+                total: 1798, 
                 date: new Date().toLocaleDateString(), 
                 status: "Shipped" 
             }
