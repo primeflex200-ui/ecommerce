@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product - CB Admin</title>
+    <link rel="stylesheet" href="admin-styles.css">
+</head>
+<body class="admin-page">
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <h2>CB Admin</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="admin-dashboard.html" class="nav-link">Dashboard</a>
+                <a href="admin-products.html" class="nav-link">Products</a>
+                <a href="admin-add-product.html" class="nav-link active">Add Product</a>
+                <a href="admin-orders.html" class="nav-link">Orders</a>
+                <a href="#" class="nav-link" onclick="adminLogout()">Logout</a>
+            </nav>
+        </aside>
+        
+        <main class="admin-content">
+            <div class="content-header">
+                <h1>Add New Product</h1>
+            </div>
+            
+            <div class="form-container">
+                <form id="add-product-form" onsubmit="handleAddProduct(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Product Name *</label>
+                            <input type="text" id="product-name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Category *</label>
+                            <select id="product-category" required>
+                                <option value="">Select Category</option>
+                                <option value="Fruits & Vegetables">Fruits & Vegetables</option>
+                                <option value="Daily Staples">Daily Staples</option>
+                                <option value="Snacks & More">Snacks & More</option>
+                                <option value="Bakery & Dairy">Bakery & Dairy</option>
+                                <option value="Home Food">Home Food</option>
+                                <option value="Special Categories">Special Categories</option>
+                                <option value="Conscious Living">Conscious Living</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Subcategory *</label>
+                            <input type="text" id="product-subcategory" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Price (₹) *</label>
+                            <input type="number" id="product-price" required min="0">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Stock Quantity *</label>
+                            <input type="number" id="product-stock" required min="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Product Image</label>
+                            <input type="file" id="product-image" accept="image/*" onchange="previewImage(event)">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="product-description" rows="4"></textarea>
+                    </div>
+                    
+                    <div class="image-preview" id="image-preview"></div>
+                    
+                    <div class="form-message" id="form-message"></div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Add Product</button>
+                        <a href="admin-products.html" class="btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+    
+    <script src="admin-script.js"></script>
+</body>
+</html>

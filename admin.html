@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - CB Organic Products</title>
+    <link rel="stylesheet" href="admin-styles.css">
+</head>
+<body class="admin-login-page">
+    <!-- Back to Website Button -->
+    <a href="index.html" class="back-to-website">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Back to Website
+    </a>
+    
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>CB Admin Panel</h1>
+                <p>Organic Products Store</p>
+            </div>
+            
+            <form id="admin-login-form" onsubmit="handleAdminLogin(event)">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="admin-email" required placeholder="admin@cb.com">
+                </div>
+                
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="admin-password" required placeholder="Enter password">
+                </div>
+                
+                <div class="login-message" id="login-message"></div>
+                
+                <button type="submit" class="btn-primary">Login to Dashboard</button>
+            </form>
+            
+            <div class="login-footer">
+                <p>Demo Credentials: admin@cb.com / admin123</p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="admin-script.js"></script>
+</body>
+</html>

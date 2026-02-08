@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders - CB Admin</title>
+    <link rel="stylesheet" href="admin-styles.css">
+</head>
+<body class="admin-page">
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <h2>CB Admin</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="admin-dashboard.html" class="nav-link">Dashboard</a>
+                <a href="admin-products.html" class="nav-link">Products</a>
+                <a href="admin-add-product.html" class="nav-link">Add Product</a>
+                <a href="admin-orders.html" class="nav-link active">Orders</a>
+                <a href="#" class="nav-link" onclick="adminLogout()">Logout</a>
+            </nav>
+        </aside>
+        
+        <main class="admin-content">
+            <div class="content-header">
+                <h1>Orders Received</h1>
+            </div>
+            
+            <div class="table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer Name</th>
+                            <th>Items</th>
+                            <th>Total</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-table-body">
+                        <!-- Orders will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+    
+    <script src="admin-script.js"></script>
+</body>
+</html>

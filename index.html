@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organic Cow Products - Pure & Natural</title>
+    <link rel="stylesheet" href="styles.css?v=3">
+</head>
+<body>
+    <!-- Top Announcement Bar -->
+    <div class="top-strip">
+        <div class="container">
+            <p>Next day delivery available for select products | Minimum order applies</p>
+        </div>
+    </div>
+
+    <!-- Main Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <!-- Left: Logo -->
+                <div class="logo-section">
+                    <div class="logo">CB</div>
+                    <div class="logo-subtitle">Organic Products Store</div>
+                </div>
+
+                <!-- Center: Search Bar -->
+                <div class="search-section">
+                    <input type="text" placeholder="Search for organic products..." class="main-search-bar">
+                    <button class="search-btn">Search</button>
+                </div>
+
+                <!-- Right: Navigation Items -->
+                <div class="nav-items">
+                    <a href="#" class="nav-item">
+                        <span class="nav-label">New To CB</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="nav-label">Club</span>
+                    </a>
+                    <a href="orders.html" class="nav-item">
+                        <span class="nav-label">My Orders</span>
+                    </a>
+                    <a href="cart.html" class="nav-item">
+                        <span class="nav-label">Cart (<span class="cart-count">0</span>)</span>
+                    </a>
+                    <!-- Login Button -->
+                    <a href="#" class="nav-item" id="profile-btn" onclick="openAuthModal()">
+                        <span class="nav-label">Login</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Profile Dropdown (hidden by default) -->
+    <div class="profile-dropdown" id="profile-dropdown">
+        <a href="#" onclick="showProfile()">My Profile</a>
+        <a href="#" onclick="showOrders()">Orders</a>
+        <a href="#" onclick="logout()">Logout</a>
+    </div>
+
+    <!-- Auth Modal -->
+    <div class="auth-modal" id="auth-modal">
+        <div class="auth-modal-content">
+            <span class="auth-close" onclick="closeAuthModal()">&times;</span>
+            
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchTab('signin')">Sign In</button>
+                <button class="auth-tab" onclick="switchTab('signup')">Sign Up</button>
+            </div>
+
+            <!-- Sign In Form -->
+            <div class="auth-form-container active" id="signin-form">
+                <h2>Welcome Back</h2>
+                <form onsubmit="handleSignIn(event)">
+                    <div class="form-group">
+                        <label>Email or Mobile</label>
+                        <input type="text" id="signin-email" required placeholder="Enter email or mobile">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="signin-password" required placeholder="Enter password">
+                    </div>
+                    <div class="auth-message" id="signin-message"></div>
+                    <button type="submit" class="btn btn-primary auth-submit">Sign In</button>
+                </form>
+            </div>
+
+            <!-- Sign Up Form -->
+            <div class="auth-form-container" id="signup-form">
+                <h2>Create Account</h2>
+                <form onsubmit="handleSignUp(event)">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="signup-name" required placeholder="Enter your full name">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="signup-email" required placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label>Mobile Number</label>
+                        <input type="tel" id="signup-mobile" required placeholder="Enter mobile number">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="signup-password" required placeholder="Create password">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm Password</label>
+                        <input type="password" id="signup-confirm" required placeholder="Confirm password">
+                    </div>
+                    <div class="auth-message" id="signup-message"></div>
+                    <button type="submit" class="btn btn-primary auth-submit">Create Account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div class="auth-modal" id="admin-modal">
+        <div class="auth-modal-content">
+            <span class="auth-close" onclick="closeAdminModal()">&times;</span>
+            
+            <div class="admin-modal-header">
+                <h2>Admin Login</h2>
+                <p>Access the admin dashboard</p>
+            </div>
+
+            <form onsubmit="handleAdminLoginModal(event)">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="admin-modal-email" required placeholder="admin@cb.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="admin-modal-password" required placeholder="Enter password">
+                </div>
+                <div class="auth-message" id="admin-modal-message"></div>
+                <button type="submit" class="btn btn-primary auth-submit">Login to Dashboard</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Secondary Navigation -->
+    <div class="secondary-nav">
+        <div class="container">
+            <div class="secondary-nav-links">
+                <a href="index.html" class="active">Home</a>
+                <a href="shop.html">Shop</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+            </div>
+        </div>
+    </div>
+
+    <section class="hero" style="background-image: url('images/hero-background.png'); background-size: cover; background-position: center;">
+        <div class="hero-content">
+            <h1>Pure Organic Cow Products</h1>
+            <p>Experience the goodness of nature with our 100% organic cow products, sourced from traditional farms using time-honored methods</p>
+            <a href="shop.html" class="btn btn-primary">Shop Now</a>
+        </div>
+    </section>
+
+    <section class="categories">
+        <div class="container">
+            <h2 class="section-title">Our Categories</h2>
+            <div class="category-grid">
+                <div class="category-card">
+                    <img src="images/ghee.png" alt="A2 Ghee" class="category-image">
+                    <h3>A2 Ghee</h3>
+                    <p>Pure desi ghee from A2 milk</p>
+                </div>
+                <div class="category-card">
+                    <img src="images/milk.png" alt="Cow Milk" class="category-image">
+                    <h3>Cow Milk</h3>
+                    <p>Fresh organic cow milk</p>
+                </div>
+                <div class="category-card">
+                    <img src="images/gomutra.png" alt="Gomutra Products" class="category-image">
+                    <h3>Gomutra Products</h3>
+                    <p>Traditional wellness products</p>
+                </div>
+                <div class="category-card">
+                    <img src="images/cow-dung.png" alt="Cow Dung Products" class="category-image">
+                    <h3>Cow Dung Products</h3>
+                    <p>Eco-friendly organic items</p>
+                </div>
+                <div class="category-card">
+                    <img src="images/panchagavya.png" alt="Panchagavya" class="category-image">
+                    <h3>Panchagavya</h3>
+                    <p>Complete wellness solution</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="featured-products">
+        <div class="container">
+            <h2 class="section-title">Featured Products</h2>
+            <div class="product-grid">
+                <div class="product-card" data-id="1">
+                    <img src="images/ghee.png" alt="Premium A2 Ghee">
+                    <h3>Premium A2 Ghee</h3>
+                    <p class="price">₹899</p>
+                    <button class="btn btn-secondary add-to-cart" onclick="addToCart(1, 'Premium A2 Ghee', 899)">Add to Cart</button>
+                </div>
+                <div class="product-card" data-id="2">
+                    <img src="images/milk.png" alt="Fresh Cow Milk">
+                    <h3>Fresh Cow Milk</h3>
+                    <p class="price">₹65</p>
+                    <button class="btn btn-secondary add-to-cart" onclick="addToCart(2, 'Fresh Cow Milk', 65)">Add to Cart</button>
+                </div>
+                <div class="product-card" data-id="3">
+                    <img src="images/gomutra.png" alt="Gomutra Ark">
+                    <h3>Gomutra Ark</h3>
+                    <p class="price">₹299</p>
+                    <button class="btn btn-secondary add-to-cart" onclick="addToCart(3, 'Gomutra Ark', 299)">Add to Cart</button>
+                </div>
+                <div class="product-card" data-id="4">
+                    <img src="images/cow-dung.png" alt="Organic Dung Cakes">
+                    <h3>Organic Dung Cakes</h3>
+                    <p class="price">₹199</p>
+                    <button class="btn btn-secondary add-to-cart" onclick="addToCart(4, 'Organic Dung Cakes', 199)">Add to Cart</button>
+                </div>
+                <div class="product-card" data-id="5">
+                    <img src="images/panchagavya.png" alt="Panchagavya Mix">
+                    <h3>Panchagavya Mix</h3>
+                    <p class="price">₹499</p>
+                    <button class="btn btn-secondary add-to-cart" onclick="addToCart(5, 'Panchagavya Mix', 499)">Add to Cart</button>
+                </div>
+                <div class="product-card" data-id="6">
+                    <img src="images/curd.png" alt="Fresh Curd">
+                    <h3>Fresh Curd</h3>
+                    <p class="price">₹75</p>
+                    <button class="btn btn-secondary add-to-cart" onclick="addToCart(6, 'Fresh Curd', 75)">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="why-choose">
+        <div class="container">
+            <h2 class="section-title">Why Choose Us</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <img src="images/organic.png" alt="100% Organic" class="feature-image">
+                    <h3>100% Organic</h3>
+                    <p>All products are certified organic and chemical-free</p>
+                </div>
+                <div class="feature-card">
+                    <img src="images/fresh-farm.png" alt="Farm Fresh" class="feature-image">
+                    <h3>Farm Fresh</h3>
+                    <p>Directly sourced from our organic farms</p>
+                </div>
+                <div class="feature-card">
+                    <img src="images/traditional-methods.png" alt="Traditional Methods" class="feature-image">
+                    <h3>Traditional Methods</h3>
+                    <p>Following ancient Vedic practices</p>
+                </div>
+                <div class="feature-card">
+                    <img src="images/chemical-free.png" alt="Chemical Free" class="feature-image">
+                    <h3>Chemical Free</h3>
+                    <p>No pesticides, hormones, or additives</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="testimonials">
+        <div class="container">
+            <h2 class="section-title">What Our Customers Say</h2>
+            <div class="testimonial-grid">
+                <div class="testimonial-card">
+                    <p>"The A2 ghee is absolutely pure and has an amazing aroma. Best quality I've found!"</p>
+                    <div class="customer-name">- Priya Sharma</div>
+                </div>
+                <div class="testimonial-card">
+                    <p>"Fresh milk delivered daily. My family loves the taste and quality."</p>
+                    <div class="customer-name">- Rajesh Kumar</div>
+                </div>
+                <div class="testimonial-card">
+                    <p>"Authentic products following traditional methods. Highly recommended!"</p>
+                    <div class="customer-name">- Anita Desai</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>About Our Store</h3>
+                    <p>We provide 100% organic cow products sourced from traditional farms, ensuring purity and quality in every product.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Info</h3>
+                    <p>Phone: +91 98765 43210</p>
+                    <p>Email: info@organiccow.com</p>
+                    <p>Address: Organic Farm, Village Road</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Follow Us</h3>
+                    <div class="social-links">
+                        <a href="#">Facebook</a>
+                        <a href="#">Instagram</a>
+                        <a href="#">Twitter</a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Admin Access</h3>
+                    <div class="admin-link">
+                        <a href="admin.html">Admin Login</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Organic Cow Products. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
