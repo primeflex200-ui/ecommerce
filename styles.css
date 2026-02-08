@@ -902,14 +902,43 @@ body {
 }
 
 .contact-card .image-placeholder {
-    height: 80px;
-    max-width: 80px;
+    height: 40px;
+    max-width: 40px;
     margin: 0 auto 1rem;
+}
+
+.contact-icon-wrapper {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.5rem;
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+}
+
+.contact-card:hover .contact-icon-wrapper {
+    transform: scale(1.1);
+}
+
+.contact-icon {
+    width: 40px;
+    height: 40px;
 }
 
 .contact-card h3 {
     color: #4a7c59;
     margin: 1rem 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.contact-card p {
+    color: #666;
+    margin: 0.5rem 0;
+    line-height: 1.6;
 }
 
 /* Mobile Responsive */
