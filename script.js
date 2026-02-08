@@ -621,3 +621,93 @@ window.addEventListener('click', function(event) {
         closeAdminModal();
     }
 });
+
+
+// Search Functionality
+function handleSearch() {
+    const searchInput = document.querySelector('.main-search-bar');
+    const searchBtn = document.querySelector('.search-btn');
+    
+    if (!searchInput || !searchBtn) return;
+    
+    // Search on button click
+    searchBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        performSearch();
+    });
+    
+    // Search on Enter key
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            performSearch();
+        }
+    });
+}
+
+function performSearch() {
+    const searchInput = document.querySelector('.main-search-bar');
+    const searchTerm = searchInput.value.trim().toLowerCase();
+    
+    if (!searchTerm) {
+        alert('Please enter a search term');
+        return;
+    }
+    
+    // Get all products
+    const products = getShopProducts();
+    
+    // Filter products that match the search term
+    const matchedProducts = products.filter(product => {
+        return product.name.toLowerCase().includes(searchTerm) ||
+               product.category.toLowerCase().includes(searchTerm) ||
+               product.subcategory.toLowerCase().includes(searchTerm) ||
+               product.description.toLowerCase().includes(searchTerm);
+    });
+    
+    if (matchedProducts.length === 0) {
+        alert(`No products found for "${searchTerm}"`);
+        return;
+    }
+    
+    // Store search results and redirect to shop page
+    sessionStorage.setItem('searchResults', JSON.stringify(matchedProducts));
+    sessionStorage.setItem('searchTerm', searchTerm);
+    window.location.href = 'shop.html';
+}
+
+// Display search results on shop page
+function displaySearchResults() {
+    const searchResults = sessionStorage.getItem('searchResults');
+    const searchTerm = sessionStorage.getItem('searchTerm');
+    
+    if (searchResults && searchTerm) {
+        const products = JSON.parse(searchResults);
+        renderShopProducts(products);
+        
+        // Update page header
+        const pageHeader = document.querySelector('.page-header h1');
+        if (pageHeader) {
+            pageHeader.textContent = `Search Results for "${searchTerm}"`;
+        }
+        
+        const pageSubtext = document.querySelector('.page-header p');
+        if (pageSubtext) {
+            pageSubtext.textContent = `Found ${products.length} product(s) matching your search`;
+        }
+        
+        // Clear search results from session
+        sessionStorage.removeItem('searchResults');
+        sessionStorage.removeItem('searchTerm');
+    }
+}
+
+// Initialize search on all pages
+document.addEventListener('DOMContentLoaded', function() {
+    handleSearch();
+    
+    // Check for search results on shop page
+    if (window.location.pathname.includes('shop.html')) {
+        displaySearchResults();
+    }
+});
