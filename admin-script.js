@@ -355,6 +355,20 @@ const DEFAULT_CATEGORIES = [
     "Conscious Living"
 ];
 
+// Toggle category management panel
+function toggleCategoryManagement() {
+    const panel = document.getElementById('category-management-panel');
+    if (!panel) return;
+    
+    if (panel.style.display === 'none' || panel.style.display === '') {
+        panel.style.display = 'block';
+        // Load categories when panel is opened
+        displayCategoriesList();
+    } else {
+        panel.style.display = 'none';
+    }
+}
+
 // Initialize categories in localStorage
 function initializeCategories() {
     if (!localStorage.getItem('categories')) {
@@ -512,6 +526,12 @@ if (window.location.pathname.includes('admin-add-product.html')) {
                     addCategory();
                 }
             });
+        }
+        
+        // Ensure panel is hidden by default
+        const panel = document.getElementById('category-management-panel');
+        if (panel) {
+            panel.style.display = 'none';
         }
     });
 }

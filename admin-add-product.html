@@ -26,8 +26,15 @@
                 <h1>Add New Product</h1>
             </div>
             
-            <!-- Category Management Section -->
-            <div class="category-management-section" style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+            <!-- Manage Categories Button -->
+            <div style="margin-bottom: 20px;">
+                <button type="button" onclick="toggleCategoryManagement()" class="btn-primary" style="padding: 10px 20px;">
+                    Manage Categories
+                </button>
+            </div>
+            
+            <!-- Category Management Panel (Hidden by default) -->
+            <div id="category-management-panel" class="category-management-section" style="display: none; background: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
                 <h3 style="margin-bottom: 15px; color: #2e7d32;">Manage Categories</h3>
                 
                 <div style="display: flex; gap: 10px; margin-bottom: 15px;">
