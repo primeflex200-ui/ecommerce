@@ -26,6 +26,21 @@
                 <h1>Add New Product</h1>
             </div>
             
+            <!-- Category Management Section -->
+            <div class="category-management-section" style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="margin-bottom: 15px; color: #2e7d32;">Manage Categories</h3>
+                
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <input type="text" id="new-category-input" placeholder="Enter new category name" 
+                           style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                    <button onclick="addCategory()" class="btn-primary" style="padding: 8px 20px;">Add</button>
+                </div>
+                
+                <div id="categories-list" style="display: flex; flex-wrap: wrap; gap: 10px;">
+                    <!-- Categories will be loaded here dynamically -->
+                </div>
+            </div>
+            
             <div class="form-container">
                 <form id="add-product-form" onsubmit="handleAddProduct(event)">
                     <div class="form-row">

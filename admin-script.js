@@ -341,3 +341,177 @@ document.addEventListener('DOMContentLoaded', function() {
         loadOrdersTable();
     }
 });
+
+// ===== CATEGORY MANAGEMENT FUNCTIONS =====
+
+// Default categories
+const DEFAULT_CATEGORIES = [
+    "Fruits & Vegetables",
+    "Daily Staples",
+    "Snacks & More",
+    "Bakery & Dairy",
+    "Home Food",
+    "Special Categories",
+    "Conscious Living"
+];
+
+// Initialize categories in localStorage
+function initializeCategories() {
+    if (!localStorage.getItem('categories')) {
+        localStorage.setItem('categories', JSON.stringify(DEFAULT_CATEGORIES));
+    }
+}
+
+// Get categories from localStorage
+function getCategories() {
+    const categories = localStorage.getItem('categories');
+    return categories ? JSON.parse(categories) : DEFAULT_CATEGORIES;
+}
+
+// Load categories into dropdown
+function loadCategoriesDropdown() {
+    const categorySelect = document.getElementById('product-category');
+    if (!categorySelect) return;
+    
+    const categories = getCategories();
+    
+    // Clear existing options except the first one
+    categorySelect.innerHTML = '<option value="">Select Category</option>';
+    
+    // Add categories
+    categories.forEach(category => {
+        const option = document.createElement('option');
+        option.value = category;
+        option.textContent = category;
+        categorySelect.appendChild(option);
+    });
+}
+
+// Display categories list with delete buttons
+function displayCategoriesList() {
+    const categoriesList = document.getElementById('categories-list');
+    if (!categoriesList) return;
+    
+    const categories = getCategories();
+    
+    categoriesList.innerHTML = '';
+    
+    categories.forEach(category => {
+        const categoryItem = document.createElement('div');
+        categoryItem.style.cssText = 'display: flex; align-items: center; gap: 8px; background: white; padding: 8px 12px; border-radius: 5px; border: 1px solid #ddd;';
+        
+        const categoryName = document.createElement('span');
+        categoryName.textContent = category;
+        categoryName.style.cssText = 'flex: 1; color: #333;';
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.innerHTML = '×';
+        deleteBtn.style.cssText = 'background: #d32f2f; color: white; border: none; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; font-size: 18px; line-height: 1;';
+        deleteBtn.onclick = () => deleteCategory(category);
+        deleteBtn.title = 'Delete category';
+        
+        categoryItem.appendChild(categoryName);
+        categoryItem.appendChild(deleteBtn);
+        categoriesList.appendChild(categoryItem);
+    });
+}
+
+// Add new category
+function addCategory() {
+    const input = document.getElementById('new-category-input');
+    if (!input) return;
+    
+    const newCategory = input.value.trim();
+    
+    if (!newCategory) {
+        alert('Please enter a category name');
+        return;
+    }
+    
+    const categories = getCategories();
+    
+    // Check if category already exists
+    if (categories.includes(newCategory)) {
+        alert('Category already exists');
+        return;
+    }
+    
+    // Add new category
+    categories.push(newCategory);
+    localStorage.setItem('categories', JSON.stringify(categories));
+    
+    // Clear input
+    input.value = '';
+    
+    // Refresh displays
+    loadCategoriesDropdown();
+    displayCategoriesList();
+    
+    // Show success message
+    showMessage('Category added successfully!', 'success');
+}
+
+// Delete category
+function deleteCategory(categoryName) {
+    if (!confirm(`Are you sure you want to delete "${categoryName}"?`)) {
+        return;
+    }
+    
+    let categories = getCategories();
+    
+    // Remove category
+    categories = categories.filter(cat => cat !== categoryName);
+    localStorage.setItem('categories', JSON.stringify(categories));
+    
+    // Refresh displays
+    loadCategoriesDropdown();
+    displayCategoriesList();
+    
+    // Show success message
+    showMessage('Category deleted successfully!', 'success');
+}
+
+// Show message helper
+function showMessage(message, type) {
+    const messageDiv = document.createElement('div');
+    messageDiv.textContent = message;
+    messageDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        background: ${type === 'success' ? '#4caf50' : '#f44336'};
+        color: white;
+        border-radius: 5px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+    `;
+    
+    document.body.appendChild(messageDiv);
+    
+    setTimeout(() => {
+        messageDiv.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => messageDiv.remove(), 300);
+    }, 3000);
+}
+
+// Initialize category management on add-product page
+if (window.location.pathname.includes('admin-add-product.html')) {
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeCategories();
+        loadCategoriesDropdown();
+        displayCategoriesList();
+        
+        // Add Enter key support for adding categories
+        const categoryInput = document.getElementById('new-category-input');
+        if (categoryInput) {
+            categoryInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addCategory();
+                }
+            });
+        }
+    });
+}
