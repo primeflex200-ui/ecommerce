@@ -1,8 +1,30 @@
 // ===== PRODUCT DISPLAY WITH VENDOR INFORMATION =====
 
+// Initialize default products if none exist
+function initializeDefaultProducts() {
+    const products = JSON.parse(localStorage.getItem('products')) || [];
+    const vendors = JSON.parse(localStorage.getItem('vendors')) || [];
+    
+    // If no products exist, create default ones
+    if (products.length === 0) {
+        const defaultProducts = [
+            { id: 1, name: 'Premium A2 Ghee', price: 899, image: 'images/ghee.png', inStock: true, stock: 50, vendor_id: vendors[0]?.id || null },
+            { id: 3, name: 'Gomutra Ark', price: 299, image: 'images/gomutra.png', inStock: true, stock: 30, vendor_id: vendors[0]?.id || null },
+            { id: 4, name: 'Organic Dung Cakes', price: 199, image: 'images/cow-dung.png', inStock: true, stock: 100, vendor_id: vendors[0]?.id || null },
+            { id: 5, name: 'Panchagavya Mix', price: 499, image: 'images/panchagavya.png', inStock: true, stock: 25, vendor_id: vendors[0]?.id || null },
+            { id: 7, name: 'Fresh Buttermilk', price: 45, image: 'images/buttermilk.png', inStock: true, stock: 40, vendor_id: vendors[0]?.id || null },
+            { id: 8, name: 'Fresh Paneer', price: 350, image: 'images/paneer.png', inStock: true, stock: 20, vendor_id: vendors[0]?.id || null },
+            { id: 9, name: 'Pure Gomutra', price: 150, image: 'images/gomutra.png', inStock: true, stock: 35, vendor_id: vendors[0]?.id || null }
+        ];
+        localStorage.setItem('products', JSON.stringify(defaultProducts));
+        return defaultProducts;
+    }
+    return products;
+}
+
 // Load products with vendor information
 function loadProductsWithVendors() {
-    const products = JSON.parse(localStorage.getItem('products')) || [];
+    const products = initializeDefaultProducts();
     const vendors = JSON.parse(localStorage.getItem('vendors')) || [];
     const productGrid = document.querySelector('.product-grid');
     
@@ -10,7 +32,7 @@ function loadProductsWithVendors() {
     
     productGrid.innerHTML = products.map(product => {
         // Find vendor for this product
-        let vendorInfo = { vendorName: 'N/A', businessName: 'N/A' };
+        let vendorInfo = { vendorName: 'CB Organic', businessName: 'CB Organic Farm' };
         if (product.vendor_id) {
             const vendor = vendors.find(v => v.id === product.vendor_id);
             if (vendor) {
@@ -86,7 +108,9 @@ function addToCartFromShop(productId) {
     localStorage.setItem('cart', JSON.stringify(cart));
     
     // Update cart count
-    updateCartCount();
+    if (typeof updateCartCount === 'function') {
+        updateCartCount();
+    }
     
     // Show success message
     alert(`${product.name} added to cart!`);
