@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gowshala - CB Organic Products</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .gowshala-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+        
+        .page-title {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #2e7d32;
+            margin-bottom: 3rem;
+        }
+        
+        .content-section {
+            background: white;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .content-section h2 {
+            color: #2e7d32;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .content-section p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 2rem;
+        }
+        
+        .image-placeholder {
+            width: 100%;
+            height: 400px;
+            background: #f0f0f0;
+            border: 2px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 1.2rem;
+            border-radius: 8px;
+        }
+        
+        .donation-section {
+            background: linear-gradient(135deg, #4a7c59 0%, #2e7d32 100%);
+            color: white;
+            padding: 3rem 2rem;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 3rem;
+        }
+        
+        .donation-section h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .donation-section p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .donate-button {
+            display: inline-block;
+            padding: 1rem 3rem;
+            background: white;
+            color: #2e7d32;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .donate-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Announcement Bar -->
+    <div class="top-strip">
+        <div class="container">
+            <p>Next day delivery available for select products | Minimum order applies</p>
+        </div>
+    </div>
+
+    <!-- Main Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <!-- Left: Logo -->
+                <div class="logo-section">
+                    <a href="index.html" style="text-decoration: none; color: inherit;">
+                        <div class="logo">CB</div>
+                        <div class="logo-subtitle">Organic Products Store</div>
+                    </a>
+                </div>
+
+                <!-- Center: Search Bar -->
+                <div class="search-section">
+                    <input type="text" placeholder="Search for organic products..." class="main-search-bar">
+                    <button class="search-btn">Search</button>
+                </div>
+
+                <!-- Right: Navigation Items -->
+                <div class="nav-items">
+                    <a href="how-to-use.html" class="nav-item">
+                        <span class="nav-label">New To CB</span>
+                    </a>
+                    <a href="orders.html" class="nav-item">
+                        <span class="nav-label">My Orders</span>
+                    </a>
+                    <a href="cart.html" class="nav-item">
+                        <span class="nav-label">Cart (<span class="cart-count">0</span>)</span>
+                    </a>
+                    <!-- Login Button -->
+                    <a href="#" class="nav-item" id="profile-btn" onclick="openAuthModal()">
+                        <span class="nav-label">Login</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Secondary Navigation -->
+    <div class="secondary-nav">
+        <div class="container">
+            <div class="secondary-nav-links">
+                <a href="index.html">Home</a>
+                <a href="shop.html">Shop</a>
+                <a href="about.html">About</a>
+                <a href="gowshala.html" class="active">Gowshala</a>
+                <a href="contact.html">Contact</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gowshala Content -->
+    <div class="gowshala-container">
+        <h1 class="page-title">Gowshala</h1>
+
+        <!-- Section 1: Importance of Gow Matha -->
+        <div class="content-section">
+            <h2>Importance of Gow Matha</h2>
+            <p>In Indian tradition, Gow Matha (the cow) is respected as a symbol of care, nourishment, and harmony with nature. For generations, cows have supported rural families by providing milk, natural manure for farming, and resources that help maintain ecological balance. Protecting cows is considered both a cultural value and a responsibility that connects people to sustainable living and agriculture.</p>
+            <div class="image-placeholder">
+                Image Placeholder - Importance of Gow Matha
+            </div>
+        </div>
+
+        <!-- Section 2: Gowshala Production -->
+        <div class="content-section">
+            <h2>Gowshala Production</h2>
+            <p>The Gowshala follows traditional and natural methods to care for cows and produce dairy products. Milk, ghee, and other resources are obtained in a way that ensures the well-being of the animals. Cow dung is used for organic farming, and natural practices are followed to maintain cleanliness and health within the Gowshala environment.</p>
+            <div class="image-placeholder">
+                Image Placeholder - Gowshala Production
+            </div>
+        </div>
+
+        <!-- Section 3: Support and Donation -->
+        <div class="content-section">
+            <h2>Support and Donation</h2>
+            <p>Supporting the Gowshala helps provide food, shelter, and medical care for the cows. Contributions also help preserve indigenous breeds and promote natural farming practices. Every small contribution supports the mission of protecting animals and encouraging sustainable agriculture for future generations.</p>
+            <div class="image-placeholder">
+                Image Placeholder - Support and Donation
+            </div>
+        </div>
+
+        <!-- Donation Section -->
+        <div class="donation-section">
+            <h2>Support the Gowshala</h2>
+            <p>Your generous contribution helps us provide food, shelter, and medical care for our cows. It also supports the preservation of indigenous breeds and promotes natural farming practices. Together, we can protect these sacred animals and encourage sustainable agriculture for future generations.</p>
+            <button class="donate-button" onclick="alert('Donation feature coming soon!')">Donate Now</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>About Our Store</h3>
+                    <p>We provide 100% organic cow products sourced from traditional farms, ensuring purity and quality in every product.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Info</h3>
+                    <p>Phone: +91 98765 43210</p>
+                    <p>Email: info@organiccow.com</p>
+                    <p>Address: Organic Farm, Village Road</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Follow Us</h3>
+                    <div class="social-links">
+                        <a href="#">Facebook</a>
+                        <a href="#">Instagram</a>
+                        <a href="#">Twitter</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Organic Cow Products. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="unified-auth.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
