@@ -1,0 +1,134 @@
+YOUR SUPABASE PROJECT CONFIGURATION
+Project URL: https://hdlgqdjmleezidpvakjd.supabase.co
+Project Reference: hdlgqdjmleezidpvakjd
+
+===========================================
+STEP 1: GET YOUR MISSING CREDENTIALS
+===========================================
+
+Go to your Supabase dashboard:
+https://supabase.com/dashboard/project/hdlgqdjmleezidpvakjd
+
+Then get these values:
+
+A. DATABASE PASSWORD
+   1. Go to Settings → Database
+   2. Find "Database Password" section
+   3. If you forgot it, you can reset it there
+   4. Copy the password
+
+B. API KEYS
+   1. Go to Settings → API
+   2. Copy these two keys:
+      - anon public key (starts with eyJhbGci...)
+      - service_role key (starts with eyJhbGci...)
+
+===========================================
+STEP 2: UPDATE YOUR .env FILE
+===========================================
+
+Open: backend/.env
+
+Replace these placeholders:
+
+DB_PASSWORD=YOUR_DATABASE_PASSWORD_HERE
+   → Replace with your actual database password
+
+SUPABASE_ANON_KEY=YOUR_ANON_KEY_HERE
+   → Replace with your anon public key from Settings → API
+
+SUPABASE_SERVICE_KEY=YOUR_SERVICE_KEY_HERE
+   → Replace with your service_role key from Settings → API
+
+JWT_SECRET=your_jwt_secret_key_change_this_in_production
+   → Replace with a random secure string (e.g., use: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")
+
+===========================================
+STEP 3: CREATE DATABASE TABLES
+===========================================
+
+1. Go to SQL Editor in Supabase:
+   https://supabase.com/dashboard/project/hdlgqdjmleezidpvakjd/sql
+
+2. Click "New Query"
+
+3. Copy ALL content from: backend/database.sql
+
+4. Paste into the SQL editor
+
+5. Click "Run" (or press Ctrl+Enter)
+
+6. Wait for success message
+
+===========================================
+STEP 4: VERIFY TABLES
+===========================================
+
+Go to Table Editor:
+https://supabase.com/dashboard/project/hdlgqdjmleezidpvakjd/editor
+
+You should see these 9 tables:
+✓ users
+✓ vendors
+✓ products
+✓ categories
+✓ orders
+✓ order_items
+✓ cart
+✓ addresses
+✓ inventory_log
+
+===========================================
+STEP 5: START YOUR BACKEND
+===========================================
+
+1. Open terminal in backend folder
+2. Run: npm install
+3. Run: npm start
+4. You should see: "Connected to PostgreSQL database"
+5. Test: http://localhost:5000/
+
+===========================================
+STEP 6: CREATE ADMIN USER
+===========================================
+
+Use Postman or curl:
+
+POST http://localhost:5000/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "admin@cb.com",
+  "password": "admin123",
+  "firstName": "Admin",
+  "lastName": "User"
+}
+
+Then update role to admin:
+1. Go to Table Editor → users
+2. Find admin@cb.com
+3. Change role from "customer" to "admin"
+4. Save
+
+===========================================
+YOUR CONFIGURED VALUES
+===========================================
+
+✓ DB_HOST=db.hdlgqdjmleezidpvakjd.supabase.co
+✓ SUPABASE_URL=https://hdlgqdjmleezidpvakjd.supabase.co
+
+Still need:
+⚠ DB_PASSWORD (from Settings → Database)
+⚠ SUPABASE_ANON_KEY (from Settings → API)
+⚠ SUPABASE_SERVICE_KEY (from Settings → API)
+⚠ JWT_SECRET (generate a random string)
+
+===========================================
+QUICK LINKS
+===========================================
+
+Dashboard: https://supabase.com/dashboard/project/hdlgqdjmleezidpvakjd
+Database Settings: https://supabase.com/dashboard/project/hdlgqdjmleezidpvakjd/settings/database
+API Settings: https://supabase.com/dashboard/project/hdlgqdjmleezidpvakjd/settings/api
+SQL Editor: https://supabase.com/dashboard/project/hdlgqdjmleezidpvakjd/sql
+Table Editor: https://supabase.com/dashboard/project/hdlgqdjmleezidpvakjd/editor

@@ -190,7 +190,7 @@
                             <textarea id="notes" name="notes" rows="3"></textarea>
                         </div>
                         
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">Place Order</button>
+                        <button type="button" class="btn btn-primary" style="width: 100%;" onclick="handleCheckoutSubmit(event)">Place Order</button>
                     </form>
                 </div>
                 
@@ -225,12 +225,6 @@
                         <a href="#">Twitter</a>
                     </div>
                 </div>
-                <div class="footer-section">
-                    <h3>Admin Access</h3>
-                    <div class="admin-link">
-                        <a href="admin.html">Admin Login</a>
-                    </div>
-                </div>
             </div>
             <div class="footer-bottom">
                 <p>&copy; 2024 Organic Cow Products. All rights reserved.</p>
@@ -263,6 +257,53 @@
         </div>
     </div>
 
+    <script src="payment.js"></script>
     <script src="script.js"></script>
+    <script>
+        // Checkout form handler with payment integration
+        function handleCheckoutSubmit(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            
+            if (cart.length === 0) {
+                alert('Your cart is empty!');
+                window.location.href = 'shop.html';
+                return false;
+            }
+            
+            // Validate required fields
+            const name = document.getElementById('name').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const address = document.getElementById('address').value.trim();
+            const city = document.getElementById('city').value.trim();
+            const pincode = document.getElementById('pincode').value.trim();
+            
+            if (!name || !phone || !address || !city || !pincode) {
+                alert('Please fill in all required fields');
+                return false;
+            }
+            
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            const orderData = {
+                items: cart,
+                total: total,
+                customerName: name,
+                email: document.getElementById('email').value,
+                phone: phone,
+                shippingAddress: `${address}, ${city}, ${pincode}`,
+                notes: document.getElementById('notes').value
+            };
+            
+            // Open payment modal
+            openCheckoutPayment(orderData);
+            
+            return false;
+        }
+    </script>
 </body>
 </html>

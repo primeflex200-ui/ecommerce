@@ -184,7 +184,7 @@
         <div class="donation-section">
             <h2>Support the Gowshala</h2>
             <p>Your generous contribution helps us provide food, shelter, and medical care for our cows. It also supports the preservation of indigenous breeds and promotes natural farming practices. Together, we can protect these sacred animals and encourage sustainable agriculture for future generations.</p>
-            <button class="donate-button" onclick="alert('Donation feature coming soon!')">Donate Now</button>
+            <button class="donate-button" onclick="openDonationForm()">Donate Now</button>
         </div>
     </div>
 
@@ -217,7 +217,76 @@
         </div>
     </footer>
 
+    <!-- Donation Form Modal -->
+    <div class="auth-modal" id="donation-form-modal" style="display: none;">
+        <div class="auth-modal-content" style="max-width: 400px;">
+            <span class="auth-close" onclick="closeDonationForm()">&times;</span>
+            
+            <div style="padding: 2rem;">
+                <h2 style="color: #2e7d32; margin-bottom: 1.5rem; text-align: center;">Make a Donation</h2>
+                
+                <form id="donation-form" onsubmit="handleDonation(event)">
+                    <div class="form-group">
+                        <label>Your Name *</label>
+                        <input type="text" id="donor-name" required placeholder="Enter your name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Donation Amount (₹) *</label>
+                        <input type="number" id="donation-amount" required min="1" placeholder="Enter amount">
+                    </div>
+                    
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                        <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="setDonationAmount(500)">₹500</button>
+                        <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="setDonationAmount(1000)">₹1000</button>
+                        <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="setDonationAmount(2000)">₹2000</button>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Proceed to Payment</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="payment.js"></script>
     <script src="unified-auth.js"></script>
     <script src="script.js"></script>
+    <script>
+        function openDonationForm() {
+            document.getElementById('donation-form-modal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeDonationForm() {
+            document.getElementById('donation-form-modal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        function setDonationAmount(amount) {
+            document.getElementById('donation-amount').value = amount;
+        }
+        
+        function handleDonation(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('donor-name').value;
+            const amount = parseFloat(document.getElementById('donation-amount').value);
+            
+            if (!name || !amount || amount <= 0) {
+                alert('Please enter valid details');
+                return;
+            }
+            
+            closeDonationForm();
+            
+            const donationData = {
+                name: name,
+                amount: amount
+            };
+            
+            // Open payment modal
+            openDonationPayment(donationData);
+        }
+    </script>
 </body>
 </html>

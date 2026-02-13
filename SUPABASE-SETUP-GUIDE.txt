@@ -1,0 +1,206 @@
+====================================================
+CB ORGANIC STORE - SUPABASE SETUP GUIDE
+====================================================
+
+STEP 1: CREATE SUPABASE PROJECT
+====================================================
+1. Go to https://supabase.com
+2. Sign in or create account
+3. Click "New Project"
+4. Enter project details:
+   - Name: cb-organic-store
+   - Database Password: [Choose strong password]
+   - Region: [Choose closest region]
+5. Wait for project to be created
+
+====================================================
+STEP 2: RUN DATABASE SCHEMA
+====================================================
+1. In Supabase Dashboard, go to "SQL Editor"
+2. Click "New Query"
+3. Copy entire content from: supabase-schema.sql
+4. Paste into SQL Editor
+5. Click "Run" button
+6. Verify tables created in "Table Editor"
+
+Expected Tables:
+- users
+- vendors
+- categories
+- products
+- orders
+- order_items
+- cart
+- addresses
+- inventory_log
+- donations
+
+====================================================
+STEP 3: CREATE STORAGE BUCKETS
+====================================================
+1. Go to "Storage" in Supabase Dashboard
+2. Click "Create Bucket"
+
+Create these buckets:
+
+Bucket 1: product-images
+- Name: product-images
+- Public: YES
+- File size limit: 5MB
+- Allowed MIME types: image/*
+
+Bucket 2: vendor-documents
+- Name: vendor-documents
+- Public: NO
+- File size limit: 10MB
+- Allowed MIME types: application/pdf, image/*
+
+Bucket 3: profile-images
+- Name: profile-images
+- Public: YES
+- File size limit: 2MB
+- Allowed MIME types: image/*
+
+Bucket 4: category-images
+- Name: category-images
+- Public: YES
+- File size limit: 3MB
+- Allowed MIME types: image/*
+
+====================================================
+STEP 4: GET API CREDENTIALS
+====================================================
+1. Go to "Settings" > "API"
+2. Copy these values:
+
+Project URL: https://[your-project-id].supabase.co
+API Key (anon, public): eyJhbGc...
+Service Role Key: eyJhbGc... (Keep secret!)
+
+3. Update backend/.env file:
+SUPABASE_URL=https://[your-project-id].supabase.co
+SUPABASE_ANON_KEY=[your-anon-key]
+SUPABASE_SERVICE_KEY=[your-service-key]
+
+====================================================
+STEP 5: VERIFY SAMPLE DATA
+====================================================
+1. Go to "Table Editor"
+2. Check "users" table - should have 2 users:
+   - admin@cb.com (role: admin)
+   - vendor@cb.com (role: vendor)
+3. Check "vendors" table - should have 1 vendor
+4. Check "categories" table - should have 3 categories
+
+====================================================
+STEP 6: TEST DATABASE CONNECTION
+====================================================
+1. Open terminal in backend folder
+2. Run: node test-connection.js
+3. Should see: "Connected to Supabase successfully"
+
+====================================================
+STEP 7: DISABLE RLS (For Prototype)
+====================================================
+RLS is already disabled in schema.
+For production, enable RLS:
+
+1. Go to "Authentication" > "Policies"
+2. Enable RLS for each table
+3. Create policies for each role
+
+====================================================
+STEP 8: FRONTEND INTEGRATION
+====================================================
+1. Include data-manager.js in all HTML pages:
+   <script src="data-manager.js"></script>
+
+2. Include empty-states.css:
+   <link rel="stylesheet" href="empty-states.css">
+
+3. Use DataManager functions:
+   - DataManager.getAllProducts()
+   - DataManager.addProduct(product)
+   - DataManager.getCart()
+   - etc.
+
+====================================================
+STEP 9: CLEAR DEMO DATA
+====================================================
+To start fresh:
+
+1. Open browser console
+2. Run: localStorage.clear()
+3. Refresh page
+4. All demo data removed
+
+====================================================
+STEP 10: ADD FIRST PRODUCT
+====================================================
+1. Login as admin: admin@cb.com / admin123
+2. Go to Admin Dashboard
+3. Click "Add Product"
+4. Fill product details
+5. Click "Save"
+6. Product appears in shop
+
+====================================================
+DEFAULT LOGIN CREDENTIALS
+====================================================
+Admin:
+Email: admin@cb.com
+Password: admin123
+
+Vendor:
+Email: vendor@cb.com
+Password: vendor123
+
+====================================================
+STORAGE BUCKET POLICIES (Optional)
+====================================================
+For public buckets, add policy:
+
+1. Go to Storage > [bucket-name] > Policies
+2. Click "New Policy"
+3. Select "Allow public read access"
+4. Save
+
+====================================================
+TROUBLESHOOTING
+====================================================
+Issue: Tables not created
+Solution: Check SQL syntax errors in SQL Editor
+
+Issue: Cannot connect to database
+Solution: Verify credentials in .env file
+
+Issue: Storage upload fails
+Solution: Check bucket permissions and file size
+
+Issue: Empty state not showing
+Solution: Clear localStorage and refresh
+
+====================================================
+NEXT STEPS
+====================================================
+1. Test admin product creation
+2. Test vendor product creation
+3. Test customer checkout flow
+4. Test payment simulation
+5. Verify order appears in admin/vendor dashboard
+
+====================================================
+PRODUCTION CHECKLIST
+====================================================
+[ ] Enable RLS on all tables
+[ ] Create RLS policies for each role
+[ ] Enable email verification
+[ ] Set up proper authentication
+[ ] Configure storage bucket policies
+[ ] Add rate limiting
+[ ] Enable database backups
+[ ] Set up monitoring
+[ ] Configure custom domain
+[ ] Add SSL certificate
+
+====================================================

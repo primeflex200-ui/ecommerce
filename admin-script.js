@@ -422,8 +422,14 @@ function loadOrdersTable() {
                     <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
                 </select>
             </td>
+            <td>
+                ${order.status === 'Delivered' ? 
+                    `<button class="btn-delete" onclick="deleteOrder(${index})" style="background: #dc3545; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer; font-size: 0.9rem;">Delete</button>` : 
+                    `<span style="color: #999; font-size: 0.85rem;">Available after delivery</span>`
+                }
+            </td>
         </tr>
-    `).join('') || '<tr><td colspan="6">No orders yet</td></tr>';
+    `).join('') || '<tr><td colspan="7">No orders yet</td></tr>';
 }
 
 // Update Order Status
@@ -432,6 +438,30 @@ function updateOrderStatus(index, newStatus) {
     if (orders[index]) {
         orders[index].status = newStatus;
         localStorage.setItem('orders', JSON.stringify(orders));
+        // Reload table to update delete button visibility
+        loadOrdersTable();
+    }
+}
+
+// Delete Order (only for delivered orders)
+function deleteOrder(index) {
+    const orders = JSON.parse(localStorage.getItem('orders')) || [];
+    
+    if (!orders[index]) {
+        alert('Order not found!');
+        return;
+    }
+    
+    if (orders[index].status !== 'Delivered') {
+        alert('Only delivered orders can be deleted!');
+        return;
+    }
+    
+    if (confirm(`Are you sure you want to delete order ${orders[index].id}?`)) {
+        orders.splice(index, 1);
+        localStorage.setItem('orders', JSON.stringify(orders));
+        loadOrdersTable();
+        alert('Order deleted successfully!');
     }
 }
 
@@ -1444,5 +1474,173 @@ document.addEventListener('DOMContentLoaded', function() {
     // Admin add product page - load vendors dropdown
     if (currentPage.includes('admin-add-product.html')) {
         loadVendorsDropdown();
+    }
+});
+
+
+// ===== CATEGORY MANAGEMENT FUNCTIONS =====
+
+// Open Add Category Modal
+function openAddCategoryModal() {
+    document.getElementById('add-category-modal').style.display = 'flex';
+    document.getElementById('new-category-name').value = '';
+    document.getElementById('category-form-message').textContent = '';
+}
+
+// Close Add Category Modal
+function closeAddCategoryModal() {
+    document.getElementById('add-category-modal').style.display = 'none';
+}
+
+// Add New Category
+function addNewCategory(event) {
+    event.preventDefault();
+    
+    const categoryName = document.getElementById('new-category-name').value.trim();
+    const messageEl = document.getElementById('category-form-message');
+    
+    if (!categoryName) {
+        messageEl.textContent = 'Please enter a category name';
+        messageEl.style.color = 'red';
+        return;
+    }
+    
+    // Get existing categories
+    let categories = JSON.parse(localStorage.getItem('categories')) || [
+        "Fruits & Vegetables",
+        "Daily Staples",
+        "Snacks & More",
+        "Bakery & Dairy",
+        "Home Food",
+        "Special Categories",
+        "Conscious Living"
+    ];
+    
+    // Check if category already exists
+    if (categories.includes(categoryName)) {
+        messageEl.textContent = 'Category already exists!';
+        messageEl.style.color = 'red';
+        return;
+    }
+    
+    // Add new category
+    categories.push(categoryName);
+    localStorage.setItem('categories', JSON.stringify(categories));
+    
+    // Refresh category dropdown
+    loadCategoryOptions();
+    
+    messageEl.textContent = 'Category added successfully!';
+    messageEl.style.color = 'green';
+    
+    // Close modal after 1 second
+    setTimeout(() => {
+        closeAddCategoryModal();
+    }, 1000);
+}
+
+// Open Delete Category Modal
+function openDeleteCategoryModal() {
+    const modal = document.getElementById('delete-category-modal');
+    const select = document.getElementById('delete-category-select');
+    
+    // Load categories
+    let categories = JSON.parse(localStorage.getItem('categories')) || [
+        "Fruits & Vegetables",
+        "Daily Staples",
+        "Snacks & More",
+        "Bakery & Dairy",
+        "Home Food",
+        "Special Categories",
+        "Conscious Living"
+    ];
+    
+    select.innerHTML = '<option value="">Select Category</option>';
+    categories.forEach(cat => {
+        select.innerHTML += `<option value="${cat}">${cat}</option>`;
+    });
+    
+    modal.style.display = 'flex';
+    document.getElementById('delete-category-message').textContent = '';
+}
+
+// Close Delete Category Modal
+function closeDeleteCategoryModal() {
+    document.getElementById('delete-category-modal').style.display = 'none';
+}
+
+// Delete Category
+function deleteCategory(event) {
+    event.preventDefault();
+    
+    const categoryToDelete = document.getElementById('delete-category-select').value;
+    const messageEl = document.getElementById('delete-category-message');
+    
+    if (!categoryToDelete) {
+        messageEl.textContent = 'Please select a category to delete';
+        messageEl.style.color = 'red';
+        return;
+    }
+    
+    // Get existing categories
+    let categories = JSON.parse(localStorage.getItem('categories')) || [
+        "Fruits & Vegetables",
+        "Daily Staples",
+        "Snacks & More",
+        "Bakery & Dairy",
+        "Home Food",
+        "Special Categories",
+        "Conscious Living"
+    ];
+    
+    // Remove category
+    categories = categories.filter(cat => cat !== categoryToDelete);
+    localStorage.setItem('categories', JSON.stringify(categories));
+    
+    // Refresh category dropdown
+    loadCategoryOptions();
+    
+    messageEl.textContent = 'Category deleted successfully!';
+    messageEl.style.color = 'green';
+    
+    // Close modal after 1 second
+    setTimeout(() => {
+        closeDeleteCategoryModal();
+    }, 1000);
+}
+
+// Load category options in dropdown
+function loadCategoryOptions() {
+    const categorySelect = document.getElementById('product-category');
+    if (!categorySelect) return;
+    
+    let categories = JSON.parse(localStorage.getItem('categories')) || [
+        "Fruits & Vegetables",
+        "Daily Staples",
+        "Snacks & More",
+        "Bakery & Dairy",
+        "Home Food",
+        "Special Categories",
+        "Conscious Living"
+    ];
+    
+    const currentValue = categorySelect.value;
+    categorySelect.innerHTML = '<option value="">Select Category</option>';
+    
+    categories.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat;
+        option.textContent = cat;
+        if (cat === currentValue) {
+            option.selected = true;
+        }
+        categorySelect.appendChild(option);
+    });
+}
+
+// Initialize categories on page load
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('product-category')) {
+        loadCategoryOptions();
     }
 });
