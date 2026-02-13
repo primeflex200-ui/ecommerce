@@ -23,12 +23,13 @@ function loadProductsWithVendors() {
         
         const stockStatus = product.inStock && product.stock > 0 ? 'In Stock' : 'Out of Stock';
         const stockClass = product.inStock && product.stock > 0 ? 'in-stock' : 'out-of-stock';
+        const isAvailable = product.inStock && product.stock > 0;
         
         return `
             <div class="product-card">
                 <img src="${product.image}" alt="${product.name}">
-                <div class="vendor-info" style="font-size: 0.85rem; color: #666; margin: 0.5rem 0;">
-                    <div><strong>Vendor:</strong> ${vendorInfo.vendorName}</div>
+                <div class="vendor-info" style="font-size: 0.85rem; color: #666; margin: 0.5rem 0; padding: 0.5rem; background: #f9f9f9; border-radius: 5px;">
+                    <div style="margin-bottom: 0.3rem;"><strong>Vendor:</strong> ${vendorInfo.vendorName}</div>
                     <div><strong>Business:</strong> ${vendorInfo.businessName}</div>
                 </div>
                 <h3>${product.name}</h3>
@@ -38,10 +39,57 @@ function loadProductsWithVendors() {
                         ${stockStatus}
                     </span>
                 </div>
-                <a href="product.html?id=${product.id}" class="btn btn-secondary" style="display: block; text-align: center; margin: 1rem;">View Details</a>
+                ${isAvailable ? 
+                    `<button onclick="addToCartFromShop(${product.id})" class="btn btn-primary" style="display: block; width: 100%; text-align: center; margin: 1rem 0;">Add to Cart</button>` :
+                    `<button class="btn btn-secondary" style="display: block; width: 100%; text-align: center; margin: 1rem 0; opacity: 0.5; cursor: not-allowed;" disabled>Out of Stock</button>`
+                }
             </div>
         `;
     }).join('');
+}
+
+// Add to cart from shop page
+function addToCartFromShop(productId) {
+    const products = JSON.parse(localStorage.getItem('products')) || [];
+    const product = products.find(p => p.id === productId);
+    
+    if (!product) {
+        alert('Product not found!');
+        return;
+    }
+    
+    if (!product.inStock || product.stock <= 0) {
+        alert('This product is out of stock!');
+        return;
+    }
+    
+    // Get existing cart
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    
+    // Check if product already in cart
+    const existingItem = cart.find(item => item.id === productId);
+    
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        cart.push({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.image,
+            quantity: 1,
+            vendor_id: product.vendor_id
+        });
+    }
+    
+    // Save cart
+    localStorage.setItem('cart', JSON.stringify(cart));
+    
+    // Update cart count
+    updateCartCount();
+    
+    // Show success message
+    alert(`${product.name} added to cart!`);
 }
 
 // Initialize on page load
