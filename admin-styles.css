@@ -642,3 +642,128 @@ body {
     background: #b71c1c !important;
     transform: scale(1.1);
 }
+
+
+/* Delivery Date Input Styles */
+.delivery-date-input {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    min-width: 140px;
+}
+
+.delivery-date-input:focus {
+    outline: none;
+    border-color: #4a7c59;
+}
+
+/* Vendor Portal Specific Styles */
+.admin-sidebar p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* Enhanced table for vendor info */
+.admin-table td small {
+    display: block;
+    color: #666;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+}
+
+/* Status colors for delivery status */
+.status-select option {
+    padding: 0.5rem;
+}
+
+/* Responsive adjustments for new columns */
+@media (max-width: 1200px) {
+    .admin-table {
+        font-size: 0.9rem;
+    }
+    
+    .admin-table th,
+    .admin-table td {
+        padding: 0.75rem 0.5rem;
+    }
+    
+    .delivery-date-input {
+        min-width: 120px;
+        font-size: 0.85rem;
+    }
+    
+    .status-select {
+        font-size: 0.85rem;
+    }
+}
+
+/* Vendor login footer link */
+.login-footer a {
+    color: #4a7c59;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-footer a:hover {
+    text-decoration: underline;
+}
+
+
+/* Vendor Dashboard Specific Styles */
+.vendor-info-section {
+    margin-bottom: 2rem;
+}
+
+.info-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    display: flex;
+    gap: 3rem;
+    flex-wrap: wrap;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.info-label {
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-value {
+    font-size: 1.5rem;
+    color: #2e7d32;
+    font-weight: bold;
+}
+
+.section-container {
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    color: #2e7d32;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+/* Responsive for vendor info */
+@media (max-width: 768px) {
+    .info-card {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .info-value {
+        font-size: 1.3rem;
+    }
+}

@@ -740,3 +740,193 @@ document.addEventListener('DOMContentLoaded', function() {
         displaySearchResults();
     }
 });
+
+
+// ===== ROLE-BASED LOGIN DETECTION =====
+
+// Check user role as they type
+function checkUserRole() {
+    const email = document.getElementById('signin-email').value.trim();
+    const password = document.getElementById('signin-password').value.trim();
+    
+    if (!email || !password) {
+        hideRoleButtons();
+        return;
+    }
+    
+    // Check if credentials match any user
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    const user = users.find(u => u.email === email && u.password === password);
+    
+    if (user) {
+        showRoleButtons(user.role);
+    } else {
+        hideRoleButtons();
+    }
+}
+
+// Show role-specific buttons
+function showRoleButtons(role) {
+    const roleButtonsDiv = document.getElementById('role-buttons');
+    const adminBtn = document.getElementById('admin-enter-btn');
+    const vendorBtn = document.getElementById('vendor-enter-btn');
+    const defaultBtn = document.getElementById('default-signin-btn');
+    
+    if (!roleButtonsDiv || !adminBtn || !vendorBtn || !defaultBtn) return;
+    
+    // Hide default sign in button
+    defaultBtn.style.display = 'none';
+    
+    // Show role buttons container
+    roleButtonsDiv.style.display = 'block';
+    
+    // Show appropriate button based on role
+    if (role === 'admin') {
+        adminBtn.style.display = 'block';
+        vendorBtn.style.display = 'none';
+    } else if (role === 'vendor') {
+        adminBtn.style.display = 'none';
+        vendorBtn.style.display = 'block';
+    } else {
+        // Customer - hide role buttons, show default
+        hideRoleButtons();
+    }
+}
+
+// Hide role-specific buttons
+function hideRoleButtons() {
+    const roleButtonsDiv = document.getElementById('role-buttons');
+    const adminBtn = document.getElementById('admin-enter-btn');
+    const vendorBtn = document.getElementById('vendor-enter-btn');
+    const defaultBtn = document.getElementById('default-signin-btn');
+    
+    if (!roleButtonsDiv || !adminBtn || !vendorBtn || !defaultBtn) return;
+    
+    roleButtonsDiv.style.display = 'none';
+    adminBtn.style.display = 'none';
+    vendorBtn.style.display = 'none';
+    defaultBtn.style.display = 'block';
+}
+
+// Enter as Admin
+function enterAsAdmin() {
+    const email = document.getElementById('signin-email').value.trim();
+    const password = document.getElementById('signin-password').value.trim();
+    const messageEl = document.getElementById('signin-message');
+    
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    const user = users.find(u => u.email === email && u.password === password && u.role === 'admin');
+    
+    if (user) {
+        // Store session data
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('userRole', 'admin');
+        
+        messageEl.textContent = 'Logging in as Admin...';
+        messageEl.className = 'auth-message success';
+        messageEl.style.display = 'block';
+        
+        setTimeout(() => {
+            window.location.href = 'admin-dashboard.html';
+        }, 1000);
+    } else {
+        messageEl.textContent = 'Invalid admin credentials';
+        messageEl.className = 'auth-message error';
+        messageEl.style.display = 'block';
+    }
+}
+
+// Enter as Vendor
+function enterAsVendor() {
+    const email = document.getElementById('signin-email').value.trim();
+    const password = document.getElementById('signin-password').value.trim();
+    const messageEl = document.getElementById('signin-message');
+    
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    const user = users.find(u => u.email === email && u.password === password && u.role === 'vendor');
+    
+    if (user) {
+        // Store session data
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('userRole', 'vendor');
+        
+        // Get vendor data
+        const vendors = JSON.parse(localStorage.getItem('vendors')) || [];
+        const vendor = vendors.find(v => v.userId === user.id || v.email === user.email);
+        
+        if (vendor) {
+            localStorage.setItem('currentVendorId', vendor.id);
+            localStorage.setItem('currentVendorName', vendor.vendorName);
+            localStorage.setItem('vendorLoggedIn', 'true');
+            
+            messageEl.textContent = 'Logging in as Vendor...';
+            messageEl.className = 'auth-message success';
+            messageEl.style.display = 'block';
+            
+            setTimeout(() => {
+                window.location.href = 'vendor-dashboard.html';
+            }, 1000);
+        } else {
+            messageEl.textContent = 'Vendor account not found';
+            messageEl.className = 'auth-message error';
+            messageEl.style.display = 'block';
+        }
+    } else {
+        messageEl.textContent = 'Invalid vendor credentials';
+        messageEl.className = 'auth-message error';
+        messageEl.style.display = 'block';
+    }
+}
+
+// Update the existing handleSignIn to work with customers
+const originalHandleSignIn = window.handleSignIn;
+window.handleSignIn = function(event) {
+    event.preventDefault();
+    
+    const email = document.getElementById('signin-email').value.trim();
+    const password = document.getElementById('signin-password').value.trim();
+    const messageEl = document.getElementById('signin-message');
+    
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    const user = users.find(u => u.email === email && u.password === password);
+    
+    if (user) {
+        if (user.role === 'customer') {
+            // Store session data
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('userRole', 'customer');
+            
+            messageEl.textContent = 'Login successful!';
+            messageEl.className = 'auth-message success';
+            messageEl.style.display = 'block';
+            
+            setTimeout(() => {
+                closeAuthModal();
+                updateUIForLoggedInUser();
+            }, 1000);
+        } else {
+            // Admin or Vendor - should use role-specific buttons
+            messageEl.textContent = 'Please use the role-specific button to login';
+            messageEl.className = 'auth-message error';
+            messageEl.style.display = 'block';
+        }
+    } else {
+        messageEl.textContent = 'Invalid email or password';
+        messageEl.className = 'auth-message error';
+        messageEl.style.display = 'block';
+    }
+};
+
+// Update UI for logged in user
+function updateUIForLoggedInUser() {
+    const currentUser = getCurrentUser();
+    if (currentUser) {
+        const profileBtn = document.getElementById('profile-btn');
+        if (profileBtn) {
+            profileBtn.querySelector('.nav-label').textContent = currentUser.firstName || 'Profile';
+        }
+    }
+}

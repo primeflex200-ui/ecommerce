@@ -33,13 +33,13 @@ function initializeAdminData() {
     // Initialize products if not exists
     if (!localStorage.getItem('products')) {
         const defaultProducts = [
-            { id: 1, name: "Premium A2 Ghee", category: "Bakery & Dairy", subcategory: "Ghee", price: 899, stock: 50, image: "images/ghee.png", description: "Pure A2 cow ghee", inStock: true },
-            { id: 3, name: "Gomutra Ark", category: "Conscious Living", subcategory: "Herbal Products", price: 299, stock: 30, image: "images/gomutra.png", description: "Traditional wellness", inStock: true },
-            { id: 4, name: "Organic Dung Cakes", category: "Home Food", subcategory: "Traditional Foods", price: 199, stock: 0, image: "images/cow-dung.png", description: "Eco-friendly", inStock: false },
-            { id: 5, name: "Panchagavya Mix", category: "Special Categories", subcategory: "Combo Packs", price: 499, stock: 25, image: "images/panchagavya.png", description: "Complete wellness", inStock: true },
-            { id: 7, name: "Fresh Buttermilk", category: "Snacks & More", subcategory: "Traditional Snacks", price: 45, stock: 60, image: "images/buttermilk.png", description: "Refreshing", inStock: true },
-            { id: 8, name: "Fresh Paneer", category: "Bakery & Dairy", subcategory: "Paneer", price: 350, stock: 40, image: "images/paneer.png", description: "Fresh paneer", inStock: true },
-            { id: 9, name: "Pure Gomutra", category: "Conscious Living", subcategory: "Herbal Products", price: 150, stock: 20, image: "images/gomutra.png", description: "Pure wellness", inStock: true }
+            { id: 1, name: "Premium A2 Ghee", category: "Bakery & Dairy", subcategory: "Ghee", price: 899, stock: 50, unit: "kg", image: "images/ghee.png", description: "Pure A2 cow ghee", inStock: true },
+            { id: 3, name: "Gomutra Ark", category: "Conscious Living", subcategory: "Herbal Products", price: 299, stock: 30, unit: "liter", image: "images/gomutra.png", description: "Traditional wellness", inStock: true },
+            { id: 4, name: "Organic Dung Cakes", category: "Home Food", subcategory: "Traditional Foods", price: 199, stock: 0, unit: "piece", image: "images/cow-dung.png", description: "Eco-friendly", inStock: false },
+            { id: 5, name: "Panchagavya Mix", category: "Special Categories", subcategory: "Combo Packs", price: 499, stock: 25, unit: "kg", image: "images/panchagavya.png", description: "Complete wellness", inStock: true },
+            { id: 7, name: "Fresh Buttermilk", category: "Snacks & More", subcategory: "Traditional Snacks", price: 45, stock: 60, unit: "liter", image: "images/buttermilk.png", description: "Refreshing", inStock: true },
+            { id: 8, name: "Fresh Paneer", category: "Bakery & Dairy", subcategory: "Paneer", price: 350, stock: 40, unit: "kg", image: "images/paneer.png", description: "Fresh paneer", inStock: true },
+            { id: 9, name: "Pure Gomutra", category: "Conscious Living", subcategory: "Herbal Products", price: 150, stock: 20, unit: "liter", image: "images/gomutra.png", description: "Pure wellness", inStock: true }
         ];
         localStorage.setItem('products', JSON.stringify(defaultProducts));
     }
@@ -92,20 +92,29 @@ function handleAdminLogin(event) {
 
 // Admin Logout
 function adminLogout() {
-    localStorage.removeItem('adminLoggedIn');
-    window.location.href = 'admin.html';
+    logout();
+}
+
+// Vendor Logout
+function vendorLogout() {
+    logout();
 }
 
 // Load Dashboard Data
 function loadDashboard() {
     const products = JSON.parse(localStorage.getItem('products')) || [];
     const orders = JSON.parse(localStorage.getItem('orders')) || [];
+    const vendors = JSON.parse(localStorage.getItem('vendors')) || [];
     
     const outOfStock = products.filter(p => !p.inStock || p.stock === 0).length;
     
     document.getElementById('total-products').textContent = products.length;
+    document.getElementById('total-vendors').textContent = vendors.length;
     document.getElementById('total-orders').textContent = orders.length;
     document.getElementById('out-of-stock').textContent = outOfStock;
+    
+    // Load vendors list
+    loadVendorsList();
     
     // Load recent orders
     const recentOrdersList = document.getElementById('recent-orders-list');
@@ -117,6 +126,109 @@ function loadDashboard() {
             </div>
         `).join('') || '<p>No orders yet</p>';
     }
+}
+
+// Load vendors list in dashboard
+function loadVendorsList() {
+    const vendors = JSON.parse(localStorage.getItem('vendors')) || [];
+    const products = JSON.parse(localStorage.getItem('products')) || [];
+    const tbody = document.getElementById('vendors-list-body');
+    
+    if (!tbody) return;
+    
+    tbody.innerHTML = vendors.map(vendor => {
+        const vendorProducts = products.filter(p => p.vendor_id === vendor.id);
+        const createdDate = vendor.createdAt ? new Date(vendor.createdAt).toLocaleDateString() : 'N/A';
+        
+        return `
+            <tr>
+                <td>${vendor.vendorName}</td>
+                <td>${vendor.businessName}</td>
+                <td>${vendor.email}</td>
+                <td><span class="status-badge in-stock">${vendor.status || 'active'}</span></td>
+                <td>${vendorProducts.length}</td>
+                <td>${createdDate}</td>
+            </tr>
+        `;
+    }).join('') || '<tr><td colspan="6">No vendors yet</td></tr>';
+}
+
+// Open add vendor modal
+function openAddVendorModal() {
+    document.getElementById('add-vendor-panel').classList.add('active');
+}
+
+// Close add vendor modal
+function closeAddVendorModal() {
+    document.getElementById('add-vendor-panel').classList.remove('active');
+    document.getElementById('add-vendor-form').reset();
+    document.getElementById('add-vendor-message').textContent = '';
+    document.getElementById('add-vendor-message').className = 'form-message';
+}
+
+// Handle add vendor
+function handleAddVendor(event) {
+    event.preventDefault();
+    
+    const vendorName = document.getElementById('new-vendor-name').value;
+    const businessName = document.getElementById('new-business-name').value;
+    const email = document.getElementById('new-vendor-email').value;
+    const password = document.getElementById('new-vendor-password').value;
+    const phone = document.getElementById('new-vendor-phone').value;
+    const messageEl = document.getElementById('add-vendor-message');
+    
+    // Check if email already exists
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    if (users.find(u => u.email === email)) {
+        messageEl.textContent = 'Email already exists';
+        messageEl.className = 'form-message error';
+        return;
+    }
+    
+    // Create user account
+    const userId = 'vendor-' + Date.now();
+    const newUser = {
+        id: userId,
+        email: email,
+        password: password,
+        role: 'vendor',
+        firstName: vendorName.split(' ')[0],
+        lastName: vendorName.split(' ').slice(1).join(' ') || '',
+        vendorId: null // Will be set after vendor creation
+    };
+    
+    users.push(newUser);
+    localStorage.setItem('users', JSON.stringify(users));
+    
+    // Create vendor record
+    const vendors = JSON.parse(localStorage.getItem('vendors')) || [];
+    const newVendorId = vendors.length > 0 ? Math.max(...vendors.map(v => v.id)) + 1 : 1;
+    
+    const newVendor = {
+        id: newVendorId,
+        vendorName: vendorName,
+        businessName: businessName,
+        email: email,
+        userId: userId,
+        phone: phone || '',
+        status: 'active',
+        createdAt: new Date().toISOString()
+    };
+    
+    vendors.push(newVendor);
+    localStorage.setItem('vendors', JSON.stringify(vendors));
+    
+    // Update user with vendorId
+    newUser.vendorId = newVendorId;
+    localStorage.setItem('users', JSON.stringify(users));
+    
+    messageEl.textContent = 'Vendor created successfully!';
+    messageEl.className = 'form-message success';
+    
+    setTimeout(() => {
+        closeAddVendorModal();
+        loadDashboard();
+    }, 1500);
 }
 
 // Load Products Table
@@ -535,3 +647,802 @@ if (window.location.pathname.includes('admin-add-product.html')) {
         }
     });
 }
+
+
+// ===== MULTI-VENDOR SUPPORT =====
+
+// Initialize vendors data
+function initializeVendors() {
+    if (!localStorage.getItem('vendors')) {
+        const defaultVendors = [
+            { id: 1, name: "CB Organic Farm", email: "vendor@cb.com", password: "vendor123", phone: "9876543210", status: "active" }
+        ];
+        localStorage.setItem('vendors', JSON.stringify(defaultVendors));
+    }
+}
+
+// Initialize order items
+function initializeOrderItems() {
+    if (!localStorage.getItem('order_items')) {
+        localStorage.setItem('order_items', JSON.stringify([]));
+    }
+}
+
+// Call initialization
+initializeVendors();
+initializeOrderItems();
+
+// ===== VENDOR LOGIN =====
+function handleVendorLogin(event) {
+    event.preventDefault();
+    
+    const email = document.getElementById('vendor-email').value;
+    const password = document.getElementById('vendor-password').value;
+    const messageEl = document.getElementById('login-message');
+    
+    const vendors = JSON.parse(localStorage.getItem('vendors')) || [];
+    const vendor = vendors.find(v => v.email === email && v.password === password);
+    
+    if (vendor) {
+        localStorage.setItem('vendorLoggedIn', 'true');
+        localStorage.setItem('currentVendorId', vendor.id);
+        localStorage.setItem('currentVendorName', vendor.name);
+        messageEl.textContent = 'Login successful! Redirecting...';
+        messageEl.className = 'login-message success';
+        
+        setTimeout(() => {
+            window.location.href = 'vendor-dashboard.html';
+        }, 1000);
+    } else {
+        messageEl.textContent = 'Invalid credentials';
+        messageEl.className = 'login-message error';
+    }
+}
+
+// Check vendor authentication
+function checkVendorAuth() {
+    const isLoggedIn = localStorage.getItem('vendorLoggedIn');
+    const currentPage = window.location.pathname;
+    
+    if (!isLoggedIn && (currentPage.includes('vendor-dashboard') || currentPage.includes('vendor-products') || currentPage.includes('vendor-orders'))) {
+        window.location.href = 'vendor-login.html';
+    }
+}
+
+// Vendor Logout
+function vendorLogout() {
+    localStorage.removeItem('vendorLoggedIn');
+    localStorage.removeItem('currentVendorId');
+    localStorage.removeItem('currentVendorName');
+    window.location.href = 'vendor-login.html';
+}
+
+// Display vendor name in sidebar
+function displayVendorName() {
+    const vendorNameEl = document.getElementById('vendor-name-display');
+    if (vendorNameEl) {
+        const vendorName = localStorage.getItem('currentVendorName') || 'Vendor';
+        vendorNameEl.textContent = vendorName;
+    }
+}
+
+// ===== VENDOR DASHBOARD =====
+function loadVendorDashboard() {
+    console.log('=== Loading Vendor Dashboard ===');
+    
+    const currentUser = getCurrentUser();
+    console.log('Current user:', currentUser);
+    
+    if (!currentUser || currentUser.role !== 'vendor') {
+        console.error('User is not a vendor, redirecting to login');
+        window.location.href = 'login.html';
+        return;
+    }
+    
+    const vendorId = parseInt(localStorage.getItem('currentVendorId'));
+    const vendorName = localStorage.getItem('currentVendorName') || 'Vendor';
+    
+    console.log('Vendor ID:', vendorId);
+    console.log('Vendor Name:', vendorName);
+    
+    if (!vendorId) {
+        console.error('Vendor ID not found!');
+        alert('Vendor session not properly initialized. Please try logging in again.');
+        logout();
+        return;
+    }
+    
+    const products = JSON.parse(localStorage.getItem('products')) || [];
+    console.log('Total products:', products.length);
+    
+    // Display vendor info
+    const vendorNameInfo = document.getElementById('vendor-name-info');
+    const vendorIdInfo = document.getElementById('vendor-id-info');
+    
+    if (vendorNameInfo) {
+        vendorNameInfo.textContent = vendorName;
+        console.log('Set vendor name in UI');
+    }
+    if (vendorIdInfo) {
+        vendorIdInfo.textContent = vendorId;
+        console.log('Set vendor ID in UI');
+    }
+    
+    // Load inventory table (only vendor's products)
+    loadVendorInventory(vendorId, products);
+    
+    // Load orders received (only vendor's orders)
+    loadVendorOrdersReceived(vendorId);
+    
+    console.log('=== Vendor Dashboard Loaded ===');
+}
+
+// Load vendor inventory table
+function loadVendorInventory(vendorId, products) {
+    const tbody = document.getElementById('inventory-table-body');
+    if (!tbody) return;
+    
+    const vendorProducts = products.filter(p => p.vendor_id === vendorId);
+    
+    tbody.innerHTML = vendorProducts.map(product => {
+        const unit = product.unit || 'piece';
+        const stockStatus = product.stock > 0 ? 'In Stock' : 'Out of Stock';
+        const stockClass = product.stock > 0 ? 'in-stock' : 'out-of-stock';
+        
+        return `
+        <tr>
+            <td>${product.name}</td>
+            <td>₹${product.price}</td>
+            <td>${product.stock}</td>
+            <td>${unit}</td>
+            <td><span class="status-badge ${stockClass}">${stockStatus}</span></td>
+            <td>
+                <button class="action-btn btn-edit" onclick="openStockEditPanel(${product.id})">Edit</button>
+            </td>
+        </tr>
+    `}).join('') || '<tr><td colspan="6">No products in inventory</td></tr>';
+}
+
+// Load vendor orders received
+function loadVendorOrdersReceived(vendorId) {
+    const tbody = document.getElementById('orders-received-table-body');
+    if (!tbody) return;
+    
+    // Get vendor-specific orders
+    const vendorOrders = getVendorOrders(vendorId);
+    
+    tbody.innerHTML = vendorOrders.map(item => `
+        <tr>
+            <td>${item.orderId}</td>
+            <td>${item.productName}</td>
+            <td>${item.quantity}</td>
+            <td>
+                <select class="status-select" onchange="updateVendorOrderItemStatus('${item.id}', this.value)">
+                    <option value="Pending" ${item.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                    <option value="Confirmed" ${item.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+                    <option value="Packed" ${item.status === 'Packed' ? 'selected' : ''}>Packed</option>
+                    <option value="Shipped" ${item.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                    <option value="Delivered" ${item.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                </select>
+            </td>
+        </tr>
+    `).join('') || '<tr><td colspan="4">No orders received yet</td></tr>';
+}
+
+// Update vendor order item status
+function updateVendorOrderItemStatus(orderItemId, newStatus) {
+    if (updateOrderItemStatus(orderItemId, newStatus)) {
+        alert('Order status updated successfully');
+        loadVendorDashboard();
+    } else {
+        alert('Failed to update order status');
+    }
+}
+
+// Open stock edit panel
+function openStockEditPanel(productId) {
+    const products = JSON.parse(localStorage.getItem('products')) || [];
+    const product = products.find(p => p.id === productId);
+    
+    if (product) {
+        document.getElementById('stock-product-id').value = product.id;
+        document.getElementById('stock-product-name').value = product.name;
+        document.getElementById('stock-current').value = product.stock;
+        document.getElementById('stock-new').value = product.stock;
+        document.getElementById('stock-edit-panel').classList.add('active');
+    }
+}
+
+// Close stock edit panel
+function closeStockPanel() {
+    document.getElementById('stock-edit-panel').classList.remove('active');
+    document.getElementById('stock-edit-form').reset();
+    document.getElementById('stock-form-message').textContent = '';
+    document.getElementById('stock-form-message').className = 'form-message';
+}
+
+// Save stock update
+function saveStockUpdate(event) {
+    event.preventDefault();
+    
+    const productId = parseInt(document.getElementById('stock-product-id').value);
+    const newStock = parseInt(document.getElementById('stock-new').value);
+    const messageEl = document.getElementById('stock-form-message');
+    
+    let products = JSON.parse(localStorage.getItem('products')) || [];
+    const productIndex = products.findIndex(p => p.id === productId);
+    
+    if (productIndex !== -1) {
+        products[productIndex].stock = newStock;
+        products[productIndex].inStock = newStock > 0;
+        localStorage.setItem('products', JSON.stringify(products));
+        
+        messageEl.textContent = 'Stock updated successfully!';
+        messageEl.className = 'form-message success';
+        
+        setTimeout(() => {
+            closeStockPanel();
+            loadVendorDashboard();
+        }, 1000);
+    } else {
+        messageEl.textContent = 'Product not found';
+        messageEl.className = 'form-message error';
+    }
+}
+
+// ===== VENDOR PRODUCTS =====
+function loadVendorProducts() {
+    const vendorId = parseInt(localStorage.getItem('currentVendorId'));
+    const products = JSON.parse(localStorage.getItem('products')) || [];
+    const tbody = document.getElementById('vendor-products-table-body');
+    
+    if (!tbody) return;
+    
+    const vendorProducts = products.filter(p => p.vendor_id === vendorId);
+    
+    tbody.innerHTML = vendorProducts.map(product => `
+        <tr>
+            <td><img src="${product.image}" alt="${product.name}" class="product-image-small"></td>
+            <td>${product.name}</td>
+            <td>${product.category}</td>
+            <td>₹${product.price}</td>
+            <td>${product.stock}</td>
+            <td><span class="status-badge ${product.inStock ? 'in-stock' : 'out-of-stock'}">${product.inStock ? 'In Stock' : 'Out of Stock'}</span></td>
+            <td>
+                <button class="action-btn btn-edit" onclick="editVendorProduct(${product.id})">Edit</button>
+                <button class="action-btn btn-delete" onclick="deleteVendorProduct(${product.id})">Delete</button>
+                <button class="action-btn btn-toggle" onclick="toggleVendorStock(${product.id})">${product.inStock ? 'Mark Out' : 'Mark In'}</button>
+            </td>
+        </tr>
+    `).join('') || '<tr><td colspan="7">No products yet</td></tr>';
+}
+
+// Open add product panel
+function openAddProductPanel() {
+    document.getElementById('product-panel-title').textContent = 'Add New Product';
+    document.getElementById('product-id').value = '';
+    document.getElementById('vendor-product-form').reset();
+    document.getElementById('product-current-image').innerHTML = '';
+    loadVendorCategoriesDropdown();
+    document.getElementById('product-panel').classList.add('active');
+}
+
+// Close product panel
+function closeProductPanel() {
+    document.getElementById('product-panel').classList.remove('active');
+    document.getElementById('vendor-product-form').reset();
+}
+
+// Load categories for vendor
+function loadVendorCategoriesDropdown() {
+    const categorySelect = document.getElementById('product-category');
+    if (!categorySelect) return;
+    
+    const categories = getCategories();
+    categorySelect.innerHTML = '<option value="">Select Category</option>';
+    
+    categories.forEach(category => {
+        const option = document.createElement('option');
+        option.value = category;
+        option.textContent = category;
+        categorySelect.appendChild(option);
+    });
+}
+
+// Preview product image for vendor
+let vendorImageBase64 = '';
+function previewProductImage(event) {
+    const file = event.target.files[0];
+    const preview = document.getElementById('product-current-image');
+    
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            vendorImageBase64 = e.target.result;
+            preview.innerHTML = `<img src="${vendorImageBase64}" alt="Preview" style="max-width: 150px; border-radius: 8px; margin-bottom: 10px;">`;
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+// Edit vendor product
+function editVendorProduct(id) {
+    const products = JSON.parse(localStorage.getItem('products')) || [];
+    const product = products.find(p => p.id === id);
+    
+    if (product) {
+        document.getElementById('product-panel-title').textContent = 'Edit Product';
+        document.getElementById('product-id').value = product.id;
+        document.getElementById('product-name').value = product.name;
+        document.getElementById('product-subcategory').value = product.subcategory;
+        document.getElementById('product-price').value = product.price;
+        document.getElementById('product-stock').value = product.stock;
+        document.getElementById('product-unit').value = product.unit || 'piece';
+        document.getElementById('product-description').value = product.description || '';
+        
+        loadVendorCategoriesDropdown();
+        document.getElementById('product-category').value = product.category;
+        
+        const currentImageDiv = document.getElementById('product-current-image');
+        currentImageDiv.innerHTML = `<img src="${product.image}" alt="${product.name}" style="max-width: 150px; border-radius: 8px; margin-bottom: 10px;">`;
+        vendorImageBase64 = product.image;
+        
+        document.getElementById('product-panel').classList.add('active');
+    }
+}
+
+// Save vendor product
+function saveVendorProduct(event) {
+    event.preventDefault();
+    
+    const vendorId = parseInt(localStorage.getItem('currentVendorId'));
+    const productId = document.getElementById('product-id').value;
+    const name = document.getElementById('product-name').value;
+    const category = document.getElementById('product-category').value;
+    const subcategory = document.getElementById('product-subcategory').value;
+    const price = parseInt(document.getElementById('product-price').value);
+    const stock = parseInt(document.getElementById('product-stock').value);
+    const unit = document.getElementById('product-unit').value;
+    const description = document.getElementById('product-description').value;
+    const messageEl = document.getElementById('product-form-message');
+    
+    let products = JSON.parse(localStorage.getItem('products')) || [];
+    
+    if (productId) {
+        // Edit existing product
+        const index = products.findIndex(p => p.id === parseInt(productId));
+        if (index !== -1) {
+            products[index] = {
+                ...products[index],
+                name,
+                category,
+                subcategory,
+                price,
+                stock,
+                unit,
+                description,
+                inStock: stock > 0,
+                image: vendorImageBase64 || products[index].image
+            };
+        }
+    } else {
+        // Add new product
+        const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+        const newProduct = {
+            id: newId,
+            name,
+            category,
+            subcategory,
+            price,
+            stock,
+            unit,
+            image: vendorImageBase64 || 'images/placeholder.png',
+            description,
+            inStock: stock > 0,
+            vendor_id: vendorId
+        };
+        products.push(newProduct);
+    }
+    
+    localStorage.setItem('products', JSON.stringify(products));
+    
+    messageEl.textContent = 'Product saved successfully!';
+    messageEl.className = 'form-message success';
+    
+    setTimeout(() => {
+        closeProductPanel();
+        loadVendorProducts();
+        vendorImageBase64 = '';
+    }, 1000);
+}
+
+// Delete vendor product
+function deleteVendorProduct(id) {
+    if (!confirm('Are you sure you want to delete this product?')) return;
+    
+    let products = JSON.parse(localStorage.getItem('products')) || [];
+    products = products.filter(p => p.id !== id);
+    localStorage.setItem('products', JSON.stringify(products));
+    loadVendorProducts();
+}
+
+// Toggle vendor stock
+function toggleVendorStock(id) {
+    let products = JSON.parse(localStorage.getItem('products')) || [];
+    const product = products.find(p => p.id === id);
+    if (product) {
+        product.inStock = !product.inStock;
+        localStorage.setItem('products', JSON.stringify(products));
+        loadVendorProducts();
+    }
+}
+
+// ===== VENDOR ORDERS =====
+function loadVendorOrders() {
+    const vendorId = parseInt(localStorage.getItem('currentVendorId'));
+    const products = JSON.parse(localStorage.getItem('products')) || [];
+    const orders = JSON.parse(localStorage.getItem('orders')) || [];
+    const tbody = document.getElementById('vendor-orders-table-body');
+    
+    if (!tbody) return;
+    
+    // Filter orders containing vendor's products
+    const vendorOrders = orders.filter(order => 
+        order.items && order.items.some(item => {
+            const product = products.find(p => p.name === item.name);
+            return product && product.vendor_id === vendorId;
+        })
+    );
+    
+    tbody.innerHTML = vendorOrders.map((order, index) => {
+        const deliveryDate = order.deliveryDate || 'Not set';
+        const deliveryStatus = order.deliveryStatus || 'Pending';
+        
+        return `
+        <tr>
+            <td>${order.id}</td>
+            <td>${order.items.map(item => `${item.name} (${item.quantity})`).join(', ')}</td>
+            <td>₹${order.total}</td>
+            <td>${order.date}</td>
+            <td>
+                <input type="date" class="delivery-date-input" value="${order.deliveryDate || ''}" 
+                       onchange="updateVendorDeliveryDate('${order.id}', this.value)">
+            </td>
+            <td>
+                <select class="status-select" onchange="updateVendorDeliveryStatus('${order.id}', this.value)">
+                    <option value="Pending" ${deliveryStatus === 'Pending' ? 'selected' : ''}>Pending</option>
+                    <option value="Processing" ${deliveryStatus === 'Processing' ? 'selected' : ''}>Processing</option>
+                    <option value="Shipped" ${deliveryStatus === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                    <option value="Delivered" ${deliveryStatus === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                </select>
+            </td>
+        </tr>
+    `}).join('') || '<tr><td colspan="6">No orders yet</td></tr>';
+}
+
+// Update delivery date
+function updateVendorDeliveryDate(orderId, date) {
+    let orders = JSON.parse(localStorage.getItem('orders')) || [];
+    const order = orders.find(o => o.id === orderId);
+    if (order) {
+        order.deliveryDate = date;
+        localStorage.setItem('orders', JSON.stringify(orders));
+    }
+}
+
+// Update delivery status
+function updateVendorDeliveryStatus(orderId, status) {
+    let orders = JSON.parse(localStorage.getItem('orders')) || [];
+    const order = orders.find(o => o.id === orderId);
+    if (order) {
+        order.deliveryStatus = status;
+        localStorage.setItem('orders', JSON.stringify(orders));
+    }
+}
+
+// ===== ADMIN VENDOR MANAGEMENT =====
+function loadVendorsTable() {
+    const vendors = JSON.parse(localStorage.getItem('vendors')) || [];
+    const products = JSON.parse(localStorage.getItem('products')) || [];
+    const tbody = document.getElementById('vendors-table-body');
+    
+    if (!tbody) return;
+    
+    tbody.innerHTML = vendors.map(vendor => {
+        const vendorProductCount = products.filter(p => p.vendor_id === vendor.id).length;
+        
+        return `
+        <tr>
+            <td>${vendor.id}</td>
+            <td>${vendor.name}</td>
+            <td>${vendor.email}</td>
+            <td>${vendor.phone}</td>
+            <td>${vendorProductCount}</td>
+            <td><span class="status-badge in-stock">${vendor.status || 'active'}</span></td>
+            <td>
+                <button class="action-btn btn-edit" onclick="editVendor(${vendor.id})">Edit</button>
+                <button class="action-btn btn-delete" onclick="deleteVendor(${vendor.id})">Delete</button>
+            </td>
+        </tr>
+    `}).join('') || '<tr><td colspan="7">No vendors yet</td></tr>';
+}
+
+// Open add vendor panel
+function openAddVendorPanel() {
+    document.getElementById('vendor-panel-title').textContent = 'Add New Vendor';
+    document.getElementById('vendor-id').value = '';
+    document.getElementById('vendor-form').reset();
+    document.getElementById('vendor-panel').classList.add('active');
+}
+
+// Close vendor panel
+function closeVendorPanel() {
+    document.getElementById('vendor-panel').classList.remove('active');
+    document.getElementById('vendor-form').reset();
+}
+
+// Edit vendor
+function editVendor(id) {
+    const vendors = JSON.parse(localStorage.getItem('vendors')) || [];
+    const vendor = vendors.find(v => v.id === id);
+    
+    if (vendor) {
+        document.getElementById('vendor-panel-title').textContent = 'Edit Vendor';
+        document.getElementById('vendor-id').value = vendor.id;
+        document.getElementById('vendor-name').value = vendor.name;
+        document.getElementById('vendor-email').value = vendor.email;
+        document.getElementById('vendor-password').value = vendor.password;
+        document.getElementById('vendor-phone').value = vendor.phone;
+        document.getElementById('vendor-panel').classList.add('active');
+    }
+}
+
+// Save vendor
+function saveVendor(event) {
+    event.preventDefault();
+    
+    const vendorId = document.getElementById('vendor-id').value;
+    const name = document.getElementById('vendor-name').value;
+    const email = document.getElementById('vendor-email').value;
+    const password = document.getElementById('vendor-password').value;
+    const phone = document.getElementById('vendor-phone').value;
+    const messageEl = document.getElementById('vendor-form-message');
+    
+    let vendors = JSON.parse(localStorage.getItem('vendors')) || [];
+    
+    if (vendorId) {
+        // Edit existing vendor
+        const index = vendors.findIndex(v => v.id === parseInt(vendorId));
+        if (index !== -1) {
+            vendors[index] = {
+                ...vendors[index],
+                name,
+                email,
+                password,
+                phone
+            };
+        }
+    } else {
+        // Add new vendor
+        const newId = vendors.length > 0 ? Math.max(...vendors.map(v => v.id)) + 1 : 1;
+        const newVendor = {
+            id: newId,
+            name,
+            email,
+            password,
+            phone,
+            status: 'active'
+        };
+        vendors.push(newVendor);
+    }
+    
+    localStorage.setItem('vendors', JSON.stringify(vendors));
+    
+    messageEl.textContent = 'Vendor saved successfully!';
+    messageEl.className = 'form-message success';
+    
+    setTimeout(() => {
+        closeVendorPanel();
+        loadVendorsTable();
+    }, 1000);
+}
+
+// Delete vendor
+function deleteVendor(id) {
+    if (!confirm('Are you sure you want to delete this vendor? All their products will remain but will be unassigned.')) return;
+    
+    let vendors = JSON.parse(localStorage.getItem('vendors')) || [];
+    vendors = vendors.filter(v => v.id !== id);
+    localStorage.setItem('vendors', JSON.stringify(vendors));
+    loadVendorsTable();
+}
+
+// Load vendors dropdown in add product page
+function loadVendorsDropdown() {
+    const vendorSelect = document.getElementById('product-vendor');
+    if (!vendorSelect) return;
+    
+    const vendors = JSON.parse(localStorage.getItem('vendors')) || [];
+    vendorSelect.innerHTML = '<option value="">Select Vendor</option>';
+    
+    vendors.forEach(vendor => {
+        const option = document.createElement('option');
+        option.value = vendor.id;
+        option.textContent = vendor.name;
+        vendorSelect.appendChild(option);
+    });
+}
+
+// Update handleAddProduct to include vendor_id
+const originalHandleAddProduct = handleAddProduct;
+handleAddProduct = function(event) {
+    event.preventDefault();
+    
+    const name = document.getElementById('product-name').value;
+    const vendorId = parseInt(document.getElementById('product-vendor').value);
+    const category = document.getElementById('product-category').value;
+    const subcategory = document.getElementById('product-subcategory').value;
+    const price = parseInt(document.getElementById('product-price').value);
+    const stock = parseInt(document.getElementById('product-stock').value);
+    const description = document.getElementById('product-description').value;
+    const messageEl = document.getElementById('form-message');
+    
+    if (!vendorId) {
+        messageEl.textContent = 'Please select a vendor';
+        messageEl.className = 'form-message error';
+        return;
+    }
+    
+    const products = JSON.parse(localStorage.getItem('products')) || [];
+    const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+    
+    const newProduct = {
+        id: newId,
+        name,
+        category,
+        subcategory,
+        price,
+        stock,
+        image: imageBase64 || 'images/placeholder.png',
+        description,
+        inStock: stock > 0,
+        vendor_id: vendorId
+    };
+    
+    products.push(newProduct);
+    localStorage.setItem('products', JSON.stringify(products));
+    
+    messageEl.textContent = 'Product added successfully!';
+    messageEl.className = 'form-message success';
+    
+    setTimeout(() => {
+        window.location.href = 'admin-products.html';
+    }, 1500);
+};
+
+// Update loadOrdersTable to show vendor and delivery info
+const originalLoadOrdersTable = loadOrdersTable;
+loadOrdersTable = function() {
+    const orders = JSON.parse(localStorage.getItem('orders')) || [];
+    const products = JSON.parse(localStorage.getItem('products')) || [];
+    const vendors = JSON.parse(localStorage.getItem('vendors')) || [];
+    const tbody = document.getElementById('orders-table-body');
+    
+    if (!tbody) return;
+    
+    tbody.innerHTML = orders.map((order, index) => {
+        // Get vendor for first item (simplified)
+        let vendorName = 'N/A';
+        if (order.items && order.items.length > 0) {
+            const firstProduct = products.find(p => p.name === order.items[0].name);
+            if (firstProduct && firstProduct.vendor_id) {
+                const vendor = vendors.find(v => v.id === firstProduct.vendor_id);
+                if (vendor) vendorName = vendor.name;
+            }
+        }
+        
+        const deliveryDate = order.deliveryDate || 'Not set';
+        const deliveryStatus = order.deliveryStatus || 'Pending';
+        
+        return `
+        <tr>
+            <td>${order.id}</td>
+            <td>${order.items.map(item => `${item.name} (${item.quantity})`).join(', ')}</td>
+            <td>₹${order.total}</td>
+            <td>${vendorName}</td>
+            <td>${order.date}</td>
+            <td>
+                <input type="date" class="delivery-date-input" value="${order.deliveryDate || ''}" 
+                       onchange="updateAdminDeliveryDate(${index}, this.value)">
+            </td>
+            <td>
+                <select class="status-select" onchange="updateAdminDeliveryStatus(${index}, this.value)">
+                    <option value="Pending" ${deliveryStatus === 'Pending' ? 'selected' : ''}>Pending</option>
+                    <option value="Processing" ${deliveryStatus === 'Processing' ? 'selected' : ''}>Processing</option>
+                    <option value="Shipped" ${deliveryStatus === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                    <option value="Delivered" ${deliveryStatus === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                </select>
+            </td>
+        </tr>
+    `}).join('') || '<tr><td colspan="7">No orders yet</td></tr>';
+};
+
+// Update admin delivery date
+function updateAdminDeliveryDate(index, date) {
+    let orders = JSON.parse(localStorage.getItem('orders')) || [];
+    if (orders[index]) {
+        orders[index].deliveryDate = date;
+        localStorage.setItem('orders', JSON.stringify(orders));
+    }
+}
+
+// Update admin delivery status
+function updateAdminDeliveryStatus(index, status) {
+    let orders = JSON.parse(localStorage.getItem('orders')) || [];
+    if (orders[index]) {
+        orders[index].deliveryStatus = status;
+        localStorage.setItem('orders', JSON.stringify(orders));
+    }
+}
+
+// Update loadProductsTable to show vendor info
+const originalLoadProductsTable = loadProductsTable;
+loadProductsTable = function() {
+    const products = JSON.parse(localStorage.getItem('products')) || [];
+    const vendors = JSON.parse(localStorage.getItem('vendors')) || [];
+    const tbody = document.getElementById('products-table-body');
+    
+    if (!tbody) return;
+    
+    tbody.innerHTML = products.map(product => {
+        let vendorName = 'N/A';
+        if (product.vendor_id) {
+            const vendor = vendors.find(v => v.id === product.vendor_id);
+            if (vendor) vendorName = vendor.name;
+        }
+        
+        return `
+        <tr>
+            <td><img src="${product.image}" alt="${product.name}" class="product-image-small"></td>
+            <td>${product.name}<br><small style="color: #666;">Vendor: ${vendorName}</small></td>
+            <td>${product.category}</td>
+            <td>₹${product.price}</td>
+            <td>${product.stock}</td>
+            <td><span class="status-badge ${product.inStock ? 'in-stock' : 'out-of-stock'}">${product.inStock ? 'In Stock' : 'Out of Stock'}</span></td>
+            <td>
+                <button class="action-btn btn-edit" onclick="editProduct(${product.id})">Edit</button>
+                <button class="action-btn btn-delete" onclick="deleteProduct(${product.id})">Delete</button>
+                <button class="action-btn btn-toggle" onclick="toggleStock(${product.id})">${product.inStock ? 'Mark Out' : 'Mark In'}</button>
+            </td>
+        </tr>
+    `}).join('');
+};
+
+// Initialize on page load - extend existing DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+    const currentPage = window.location.pathname;
+    
+    // Vendor pages
+    if (currentPage.includes('vendor-')) {
+        checkVendorAuth();
+        displayVendorName();
+        
+        if (currentPage.includes('vendor-dashboard.html')) {
+            loadVendorDashboard();
+        } else if (currentPage.includes('vendor-products.html')) {
+            loadVendorProducts();
+        } else if (currentPage.includes('vendor-orders.html')) {
+            loadVendorOrders();
+        }
+    }
+    
+    // Admin vendors page
+    if (currentPage.includes('admin-vendors.html')) {
+        loadVendorsTable();
+    }
+    
+    // Admin add product page - load vendors dropdown
+    if (currentPage.includes('admin-add-product.html')) {
+        loadVendorsDropdown();
+    }
+});
