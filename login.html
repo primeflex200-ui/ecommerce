@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - CB Organic Store</title>
     <link rel="stylesheet" href="admin-styles.css">
+    <script>
+        // Check if admin is already logged in BEFORE page loads
+        (function() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            const userRole = localStorage.getItem('userRole');
+            if (isLoggedIn === 'true' && userRole === 'admin') {
+                window.location.replace('admin-dashboard.html');
+            }
+        })();
+    </script>
 </head>
 <body class="admin-login-page">
     <!-- Back to Website Button -->
@@ -41,8 +51,7 @@
             <div class="login-footer">
                 <p>Demo Credentials:</p>
                 <p style="font-size: 0.85rem; margin-top: 0.5rem;">
-                    Admin: admin@cb.com / admin123<br>
-                    Vendor: vendor@cb.com / vendor123<br>
+                    Admin: ruthvik@blockfortrust.com / Saireddy880227<br>
                     Customer: customer@cb.com / customer123
                 </p>
             </div>

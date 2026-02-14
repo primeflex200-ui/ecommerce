@@ -55,45 +55,23 @@ const paymentModalHTML = `
                 <h3>Select Payment Method</h3>
                 
                 <label class="payment-method-option">
-                    <input type="radio" name="payment-method" value="UPI" checked>
+                    <input type="radio" name="payment-method" value="Cash on Delivery" checked>
+                    <div class="payment-method-card">
+                        <div class="payment-method-icon">💵</div>
+                        <div class="payment-method-info">
+                            <div class="payment-method-name">Cash on Delivery</div>
+                            <div class="payment-method-desc">Pay when you receive your order</div>
+                        </div>
+                    </div>
+                </label>
+                
+                <label class="payment-method-option">
+                    <input type="radio" name="payment-method" value="UPI">
                     <div class="payment-method-card">
                         <div class="payment-method-icon">📱</div>
                         <div class="payment-method-info">
                             <div class="payment-method-name">UPI</div>
                             <div class="payment-method-desc">Google Pay, PhonePe, Paytm</div>
-                        </div>
-                    </div>
-                </label>
-                
-                <label class="payment-method-option">
-                    <input type="radio" name="payment-method" value="Card">
-                    <div class="payment-method-card">
-                        <div class="payment-method-icon">💳</div>
-                        <div class="payment-method-info">
-                            <div class="payment-method-name">Credit/Debit Card</div>
-                            <div class="payment-method-desc">Visa, Mastercard, Rupay</div>
-                        </div>
-                    </div>
-                </label>
-                
-                <label class="payment-method-option">
-                    <input type="radio" name="payment-method" value="Net Banking">
-                    <div class="payment-method-card">
-                        <div class="payment-method-icon">🏦</div>
-                        <div class="payment-method-info">
-                            <div class="payment-method-name">Net Banking</div>
-                            <div class="payment-method-desc">All major banks</div>
-                        </div>
-                    </div>
-                </label>
-                
-                <label class="payment-method-option">
-                    <input type="radio" name="payment-method" value="Razorpay">
-                    <div class="payment-method-card">
-                        <div class="payment-method-icon">💰</div>
-                        <div class="payment-method-info">
-                            <div class="payment-method-name">Razorpay</div>
-                            <div class="payment-method-desc">Multiple payment options</div>
                         </div>
                     </div>
                 </label>

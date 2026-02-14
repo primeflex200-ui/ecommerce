@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Admin Login - CB Organic Store</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2e7d32 0%, #66bb6a 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .info-box {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2e7d32;
+        }
+        .info-box h3 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+        .credential {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 5px 0;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+        .status.success {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+        .status.error {
+            background: #ffcdd2;
+            color: #c62828;
+        }
+        .status.info {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #2e7d32;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #1b5e20;
+        }
+        button.secondary {
+            background: #757575;
+        }
+        button.secondary:hover {
+            background: #616161;
+        }
+        .test-result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        .users-list {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .user-item {
+            background: white;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border-left: 3px solid #2e7d32;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Admin Login Test</h1>
+        <p class="subtitle">Test and verify admin credentials</p>
+        
+        <div class="info-box">
+            <h3>📋 Admin Credentials</h3>
+            <div class="credential">
+                <strong>Email:</strong> ruthvik@blockfortrust.com
+            </div>
+            <div class="credential">
+                <strong>Password:</strong> Saireddy880227
+            </div>
+        </div>
+        
+        <div id="status" class="status info">
+            Click "Test Credentials" to verify admin login
+        </div>
+        
+        <button onclick="testCredentials()">🧪 Test Credentials</button>
+        <button onclick="clearAndReset()" class="secondary">🔄 Clear Cache & Reset</button>
+        <button onclick="showUsers()" class="secondary">👥 Show All Users</button>
+        <button onclick="window.location.href='index.html'">🏠 Go to Homepage</button>
+        
+        <div id="test-result" class="test-result"></div>
+        <div id="users-list"></div>
+    </div>
+    
+    <script src="unified-auth.js"></script>
+    <script>
+        function testCredentials() {
+            const statusDiv = document.getElementById('status');
+            const resultDiv = document.getElementById('test-result');
+            
+            // Initialize users if not exists
+            initializeUsers();
+            
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const testEmail = 'ruthvik@blockfortrust.com';
+            const testPassword = 'Saireddy880227';
+            
+            const user = users.find(u => u.email === testEmail && u.password === testPassword);
+            
+            if (user && user.role === 'admin') {
+                statusDiv.className = 'status success';
+                statusDiv.innerHTML = '✅ SUCCESS! Admin credentials are working correctly!';
+                
+                resultDiv.style.display = 'block';
+                resultDiv.className = 'test-result status success';
+                resultDiv.innerHTML = `
+                    <strong>✓ Admin User Found!</strong><br>
+                    ID: ${user.id}<br>
+                    Email: ${user.email}<br>
+                    Role: ${user.role}<br>
+                    Name: ${user.firstName} ${user.lastName}<br><br>
+                    <strong>You can now login with these credentials!</strong>
+                `;
+            } else {
+                statusDiv.className = 'status error';
+                statusDiv.innerHTML = '❌ ERROR! Admin credentials not found or incorrect!';
+                
+                resultDiv.style.display = 'block';
+                resultDiv.className = 'test-result status error';
+                resultDiv.innerHTML = `
+                    <strong>⚠️ Credentials Not Working</strong><br>
+                    Please click "Clear Cache & Reset" button below to fix this issue.
+                `;
+            }
+        }
+        
+        function clearAndReset() {
+            localStorage.clear();
+            
+            const defaultUsers = [
+                { 
+                    id: 'admin-001', 
+                    email: 'ruthvik@blockfortrust.com', 
+                    password: 'Saireddy880227', 
+                    role: 'admin',
+                    firstName: 'Ruthvik',
+                    lastName: 'Admin'
+                },
+                { 
+                    id: 'customer-001', 
+                    email: 'customer@cb.com', 
+                    password: 'customer123', 
+                    role: 'customer',
+                    firstName: 'John',
+                    lastName: 'Doe'
+                }
+            ];
+            
+            localStorage.setItem('users', JSON.stringify(defaultUsers));
+            
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = 'status success';
+            statusDiv.innerHTML = '✅ Cache cleared and credentials reset successfully!';
+            
+            setTimeout(() => {
+                testCredentials();
+            }, 500);
+        }
+        
+        function showUsers() {
+            const usersDiv = document.getElementById('users-list');
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            
+            if (users.length === 0) {
+                usersDiv.innerHTML = '<div class="status error">No users found in localStorage</div>';
+                return;
+            }
+            
+            usersDiv.innerHTML = '<div class="users-list"><h3>All Users in System:</h3>' +
+                users.map(user => `
+                    <div class="user-item">
+                        <strong>${user.role.toUpperCase()}</strong><br>
+                        Email: ${user.email}<br>
+                        Password: ${user.password}<br>
+                        Name: ${user.firstName} ${user.lastName}
+                    </div>
+                `).join('') +
+                '</div>';
+        }
+        
+        // Auto-test on page load
+        window.onload = function() {
+            setTimeout(testCredentials, 500);
+        };
+    </script>
+</body>
+</html>

@@ -33,10 +33,10 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Name</th>
-                            <th>Email</th>
+                            <th>Vendor Name</th>
+                            <th>Business Name</th>
                             <th>Phone</th>
-                            <th>Products</th>
+                            <th>Address</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -62,23 +62,33 @@
                 <div class="form-group">
                     <label>Vendor Name *</label>
                     <input type="text" id="vendor-name" required>
+                    <small>Supplier/Vendor contact name</small>
                 </div>
                 
                 <div class="form-group">
-                    <label>Email *</label>
-                    <input type="email" id="vendor-email" required>
+                    <label>Business Name *</label>
+                    <input type="text" id="business-name" required>
+                    <small>Company or business name</small>
                 </div>
                 
                 <div class="form-group">
-                    <label>Password *</label>
-                    <input type="password" id="vendor-password" required minlength="6">
-                    <small>Minimum 6 characters</small>
+                    <label>Phone</label>
+                    <input type="tel" id="vendor-phone" pattern="[0-9]{10}">
+                    <small>10 digit phone number (optional)</small>
                 </div>
                 
                 <div class="form-group">
-                    <label>Phone *</label>
-                    <input type="tel" id="vendor-phone" required pattern="[0-9]{10}">
-                    <small>10 digit phone number</small>
+                    <label>Address</label>
+                    <textarea id="vendor-address" rows="3"></textarea>
+                    <small>Business address (optional)</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>Status *</label>
+                    <select id="vendor-status" required>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
                 </div>
                 
                 <div class="form-message" id="vendor-form-message"></div>
@@ -91,6 +101,163 @@
         </div>
     </div>
     
-    <script src="admin-script.js"></script>
+    <script src="unified-auth.js"></script>
+    <script>
+        // Check admin access
+        checkAuth();
+        checkRoleAccess(['admin']);
+
+        let vendors = [];
+        let editingVendorId = null;
+
+        // Load vendors on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadVendors();
+        });
+
+        // Load vendors from localStorage
+        function loadVendors() {
+            vendors = JSON.parse(localStorage.getItem('vendors')) || [];
+            displayVendors();
+        }
+
+        // Display vendors in table
+        function displayVendors() {
+            const tbody = document.getElementById('vendors-table-body');
+            
+            if (vendors.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No vendors found. Add your first vendor!</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = vendors.map(vendor => `
+                <tr>
+                    <td>${vendor.id}</td>
+                    <td>${vendor.vendorName}</td>
+                    <td>${vendor.businessName}</td>
+                    <td>${vendor.phone || 'N/A'}</td>
+                    <td>${vendor.address ? (vendor.address.length > 50 ? vendor.address.substring(0, 50) + '...' : vendor.address) : 'N/A'}</td>
+                    <td><span class="status-badge status-${vendor.status}">${vendor.status}</span></td>
+                    <td>
+                        <button class="btn-edit" onclick="editVendor(${vendor.id})">Edit</button>
+                        <button class="btn-delete" onclick="deleteVendor(${vendor.id})">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Open add vendor panel
+        function openAddVendorPanel() {
+            editingVendorId = null;
+            document.getElementById('vendor-panel-title').textContent = 'Add New Vendor';
+            document.getElementById('vendor-form').reset();
+            document.getElementById('vendor-id').value = '';
+            document.getElementById('vendor-status').value = 'active';
+            document.getElementById('vendor-panel').classList.add('active');
+        }
+
+        // Close vendor panel
+        function closeVendorPanel() {
+            document.getElementById('vendor-panel').classList.remove('active');
+            document.getElementById('vendor-form').reset();
+            document.getElementById('vendor-form-message').textContent = '';
+            editingVendorId = null;
+        }
+
+        // Edit vendor
+        function editVendor(id) {
+            const vendor = vendors.find(v => v.id === id);
+            if (!vendor) return;
+
+            editingVendorId = id;
+            document.getElementById('vendor-panel-title').textContent = 'Edit Vendor';
+            document.getElementById('vendor-id').value = vendor.id;
+            document.getElementById('vendor-name').value = vendor.vendorName;
+            document.getElementById('business-name').value = vendor.businessName;
+            document.getElementById('vendor-phone').value = vendor.phone || '';
+            document.getElementById('vendor-address').value = vendor.address || '';
+            document.getElementById('vendor-status').value = vendor.status;
+            document.getElementById('vendor-panel').classList.add('active');
+        }
+
+        // Save vendor
+        function saveVendor(event) {
+            event.preventDefault();
+
+            const vendorName = document.getElementById('vendor-name').value.trim();
+            const businessName = document.getElementById('business-name').value.trim();
+            const phone = document.getElementById('vendor-phone').value.trim();
+            const address = document.getElementById('vendor-address').value.trim();
+            const status = document.getElementById('vendor-status').value;
+
+            if (editingVendorId) {
+                // Update existing vendor
+                const index = vendors.findIndex(v => v.id === editingVendorId);
+                if (index !== -1) {
+                    vendors[index] = {
+                        ...vendors[index],
+                        vendorName,
+                        businessName,
+                        phone,
+                        address,
+                        status,
+                        updatedAt: new Date().toISOString()
+                    };
+                }
+            } else {
+                // Add new vendor
+                const newVendor = {
+                    id: vendors.length > 0 ? Math.max(...vendors.map(v => v.id)) + 1 : 1,
+                    vendorName,
+                    businessName,
+                    phone,
+                    address,
+                    status,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                vendors.push(newVendor);
+            }
+
+            // Save to localStorage
+            localStorage.setItem('vendors', JSON.stringify(vendors));
+
+            // Show success message
+            const messageEl = document.getElementById('vendor-form-message');
+            messageEl.textContent = editingVendorId ? 'Vendor updated successfully!' : 'Vendor added successfully!';
+            messageEl.className = 'form-message success';
+
+            // Reload and close
+            setTimeout(() => {
+                displayVendors();
+                closeVendorPanel();
+            }, 1000);
+        }
+
+        // Delete vendor
+        function deleteVendor(id) {
+            if (!confirm('Are you sure you want to delete this vendor? This action cannot be undone.')) {
+                return;
+            }
+
+            // Check if vendor has products
+            const products = JSON.parse(localStorage.getItem('products')) || [];
+            const vendorProducts = products.filter(p => p.vendorId === id);
+
+            if (vendorProducts.length > 0) {
+                alert(`Cannot delete vendor. This vendor has ${vendorProducts.length} product(s) assigned. Please reassign or delete the products first.`);
+                return;
+            }
+
+            vendors = vendors.filter(v => v.id !== id);
+            localStorage.setItem('vendors', JSON.stringify(vendors));
+            displayVendors();
+        }
+
+        // Admin logout
+        function adminLogout() {
+            logout();
+        }
+    </script>
 </body>
 </html>

@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shop - Organic Cow Products</title>
     <link rel="stylesheet" href="styles.css">
+    <script>
+        // Check if admin is already logged in BEFORE page loads
+        (function() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            const userRole = localStorage.getItem('userRole');
+            if (isLoggedIn === 'true' && userRole === 'admin') {
+                window.location.replace('admin-dashboard.html');
+            }
+        })();
+    </script>
 </head>
 <body>
     <!-- Top Announcement Bar -->
@@ -96,9 +106,6 @@
                         <button type="button" id="admin-enter-btn" class="btn btn-primary auth-submit" onclick="enterAsAdmin()" style="display: none; margin-bottom: 0.5rem;">
                             Enter as Admin
                         </button>
-                        <button type="button" id="vendor-enter-btn" class="btn btn-primary auth-submit" onclick="enterAsVendor()" style="display: none; margin-bottom: 0.5rem;">
-                            Enter as Vendor
-                        </button>
                     </div>
                     
                     <!-- Default Sign In button -->
@@ -155,77 +162,77 @@
         <div class="container">
             <div class="category-nav-items">
                 <div class="category-item">
-                    <a href="#" class="category-link">Fruits & Vegetables</a>
+                    <a href="shop.html?category=Fruits & Vegetables" class="category-link">Fruits & Vegetables</a>
                     <div class="category-dropdown">
-                        <a href="#" class="subcategory-item" data-category="Fruits & Vegetables" data-subcategory="Fresh Fruits">Fresh Fruits</a>
-                        <a href="#" class="subcategory-item" data-category="Fruits & Vegetables" data-subcategory="Leafy Vegetables">Leafy Vegetables</a>
-                        <a href="#" class="subcategory-item" data-category="Fruits & Vegetables" data-subcategory="Root Vegetables">Root Vegetables</a>
-                        <a href="#" class="subcategory-item" data-category="Fruits & Vegetables" data-subcategory="Organic Vegetables">Organic Vegetables</a>
-                        <a href="#" class="subcategory-item" data-category="Fruits & Vegetables" data-subcategory="Seasonal Picks">Seasonal Picks</a>
+                        <a href="shop.html?category=Fruits & Vegetables" class="subcategory-item" data-category="Fruits & Vegetables" data-subcategory="Fresh Fruits">Fresh Fruits</a>
+                        <a href="shop.html?category=Fruits & Vegetables" class="subcategory-item" data-category="Fruits & Vegetables" data-subcategory="Leafy Vegetables">Leafy Vegetables</a>
+                        <a href="shop.html?category=Fruits & Vegetables" class="subcategory-item" data-category="Fruits & Vegetables" data-subcategory="Root Vegetables">Root Vegetables</a>
+                        <a href="shop.html?category=Fruits & Vegetables" class="subcategory-item" data-category="Fruits & Vegetables" data-subcategory="Organic Vegetables">Organic Vegetables</a>
+                        <a href="shop.html?category=Fruits & Vegetables" class="subcategory-item" data-category="Fruits & Vegetables" data-subcategory="Seasonal Picks">Seasonal Picks</a>
                     </div>
                 </div>
                 
                 <div class="category-item">
-                    <a href="#" class="category-link">Daily Staples</a>
+                    <a href="shop.html?category=Daily Staples" class="category-link">Daily Staples</a>
                     <div class="category-dropdown">
-                        <a href="#" class="subcategory-item" data-category="Daily Staples" data-subcategory="Rice">Rice</a>
-                        <a href="#" class="subcategory-item" data-category="Daily Staples" data-subcategory="Pulses">Pulses</a>
-                        <a href="#" class="subcategory-item" data-category="Daily Staples" data-subcategory="Atta & Flour">Atta & Flour</a>
-                        <a href="#" class="subcategory-item" data-category="Daily Staples" data-subcategory="Cooking Oils">Cooking Oils</a>
-                        <a href="#" class="subcategory-item" data-category="Daily Staples" data-subcategory="Spices">Spices</a>
-                        <a href="#" class="subcategory-item" data-category="Daily Staples" data-subcategory="Salt & Sugar">Salt & Sugar</a>
+                        <a href="shop.html?category=Daily Staples" class="subcategory-item" data-category="Daily Staples" data-subcategory="Rice">Rice</a>
+                        <a href="shop.html?category=Daily Staples" class="subcategory-item" data-category="Daily Staples" data-subcategory="Pulses">Pulses</a>
+                        <a href="shop.html?category=Daily Staples" class="subcategory-item" data-category="Daily Staples" data-subcategory="Atta & Flour">Atta & Flour</a>
+                        <a href="shop.html?category=Daily Staples" class="subcategory-item" data-category="Daily Staples" data-subcategory="Cooking Oils">Cooking Oils</a>
+                        <a href="shop.html?category=Daily Staples" class="subcategory-item" data-category="Daily Staples" data-subcategory="Spices">Spices</a>
+                        <a href="shop.html?category=Daily Staples" class="subcategory-item" data-category="Daily Staples" data-subcategory="Salt & Sugar">Salt & Sugar</a>
                     </div>
                 </div>
                 
                 <div class="category-item">
-                    <a href="#" class="category-link">Snacks & More</a>
+                    <a href="shop.html?category=Snacks & More" class="category-link">Snacks & More</a>
                     <div class="category-dropdown">
-                        <a href="#" class="subcategory-item" data-category="Snacks & More" data-subcategory="Millet Snacks">Millet Snacks</a>
-                        <a href="#" class="subcategory-item" data-category="Snacks & More" data-subcategory="Healthy Chips">Healthy Chips</a>
-                        <a href="#" class="subcategory-item" data-category="Snacks & More" data-subcategory="Dry Fruits">Dry Fruits</a>
-                        <a href="#" class="subcategory-item" data-category="Snacks & More" data-subcategory="Energy Bars">Energy Bars</a>
-                        <a href="#" class="subcategory-item" data-category="Snacks & More" data-subcategory="Traditional Snacks">Traditional Snacks</a>
+                        <a href="shop.html?category=Snacks & More" class="subcategory-item" data-category="Snacks & More" data-subcategory="Millet Snacks">Millet Snacks</a>
+                        <a href="shop.html?category=Snacks & More" class="subcategory-item" data-category="Snacks & More" data-subcategory="Healthy Chips">Healthy Chips</a>
+                        <a href="shop.html?category=Snacks & More" class="subcategory-item" data-category="Snacks & More" data-subcategory="Dry Fruits">Dry Fruits</a>
+                        <a href="shop.html?category=Snacks & More" class="subcategory-item" data-category="Snacks & More" data-subcategory="Energy Bars">Energy Bars</a>
+                        <a href="shop.html?category=Snacks & More" class="subcategory-item" data-category="Snacks & More" data-subcategory="Traditional Snacks">Traditional Snacks</a>
                     </div>
                 </div>
                 
                 <div class="category-item">
-                    <a href="#" class="category-link">Bakery & Dairy</a>
+                    <a href="shop.html?category=Bakery & Dairy" class="category-link">Bakery & Dairy</a>
                     <div class="category-dropdown">
-                        <a href="#" class="subcategory-item" data-category="Bakery & Dairy" data-subcategory="Organic Bread">Organic Bread</a>
-                        <a href="#" class="subcategory-item" data-category="Bakery & Dairy" data-subcategory="Butter">Butter</a>
-                        <a href="#" class="subcategory-item" data-category="Bakery & Dairy" data-subcategory="Ghee">Ghee</a>
-                        <a href="#" class="subcategory-item" data-category="Bakery & Dairy" data-subcategory="Paneer">Paneer</a>
-                        <a href="#" class="subcategory-item" data-category="Bakery & Dairy" data-subcategory="Cookies">Cookies</a>
+                        <a href="shop.html?category=Bakery & Dairy" class="subcategory-item" data-category="Bakery & Dairy" data-subcategory="Organic Bread">Organic Bread</a>
+                        <a href="shop.html?category=Bakery & Dairy" class="subcategory-item" data-category="Bakery & Dairy" data-subcategory="Butter">Butter</a>
+                        <a href="shop.html?category=Bakery & Dairy" class="subcategory-item" data-category="Bakery & Dairy" data-subcategory="Ghee">Ghee</a>
+                        <a href="shop.html?category=Bakery & Dairy" class="subcategory-item" data-category="Bakery & Dairy" data-subcategory="Paneer">Paneer</a>
+                        <a href="shop.html?category=Bakery & Dairy" class="subcategory-item" data-category="Bakery & Dairy" data-subcategory="Cookies">Cookies</a>
                     </div>
                 </div>
                 
                 <div class="category-item">
-                    <a href="#" class="category-link">Home Food</a>
+                    <a href="shop.html?category=Home Food" class="category-link">Home Food</a>
                     <div class="category-dropdown">
-                        <a href="#" class="subcategory-item" data-category="Home Food" data-subcategory="Pickles">Pickles</a>
-                        <a href="#" class="subcategory-item" data-category="Home Food" data-subcategory="Ready to Eat Meals">Ready to Eat Meals</a>
-                        <a href="#" class="subcategory-item" data-category="Home Food" data-subcategory="Traditional Foods">Traditional Foods</a>
-                        <a href="#" class="subcategory-item" data-category="Home Food" data-subcategory="Homemade Sweets">Homemade Sweets</a>
+                        <a href="shop.html?category=Home Food" class="subcategory-item" data-category="Home Food" data-subcategory="Pickles">Pickles</a>
+                        <a href="shop.html?category=Home Food" class="subcategory-item" data-category="Home Food" data-subcategory="Ready to Eat Meals">Ready to Eat Meals</a>
+                        <a href="shop.html?category=Home Food" class="subcategory-item" data-category="Home Food" data-subcategory="Traditional Foods">Traditional Foods</a>
+                        <a href="shop.html?category=Home Food" class="subcategory-item" data-category="Home Food" data-subcategory="Homemade Sweets">Homemade Sweets</a>
                     </div>
                 </div>
                 
                 <div class="category-item">
-                    <a href="#" class="category-link">Special Categories</a>
+                    <a href="shop.html?category=Special Categories" class="category-link">Special Categories</a>
                     <div class="category-dropdown">
-                        <a href="#" class="subcategory-item" data-category="Special Categories" data-subcategory="Combo Packs">Combo Packs</a>
-                        <a href="#" class="subcategory-item" data-category="Special Categories" data-subcategory="Subscription Boxes">Subscription Boxes</a>
-                        <a href="#" class="subcategory-item" data-category="Special Categories" data-subcategory="Offers">Offers</a>
-                        <a href="#" class="subcategory-item" data-category="Special Categories" data-subcategory="New Arrivals">New Arrivals</a>
+                        <a href="shop.html?category=Special Categories" class="subcategory-item" data-category="Special Categories" data-subcategory="Combo Packs">Combo Packs</a>
+                        <a href="shop.html?category=Special Categories" class="subcategory-item" data-category="Special Categories" data-subcategory="Subscription Boxes">Subscription Boxes</a>
+                        <a href="shop.html?category=Special Categories" class="subcategory-item" data-category="Special Categories" data-subcategory="Offers">Offers</a>
+                        <a href="shop.html?category=Special Categories" class="subcategory-item" data-category="Special Categories" data-subcategory="New Arrivals">New Arrivals</a>
                     </div>
                 </div>
                 
                 <div class="category-item">
-                    <a href="#" class="category-link">Conscious Living</a>
+                    <a href="shop.html?category=Conscious Living" class="category-link">Conscious Living</a>
                     <div class="category-dropdown">
-                        <a href="#" class="subcategory-item" data-category="Conscious Living" data-subcategory="Natural Soaps">Natural Soaps</a>
-                        <a href="#" class="subcategory-item" data-category="Conscious Living" data-subcategory="Eco Products">Eco Products</a>
-                        <a href="#" class="subcategory-item" data-category="Conscious Living" data-subcategory="Organic Personal Care">Organic Personal Care</a>
-                        <a href="#" class="subcategory-item" data-category="Conscious Living" data-subcategory="Herbal Products">Herbal Products</a>
+                        <a href="shop.html?category=Conscious Living" class="subcategory-item" data-category="Conscious Living" data-subcategory="Natural Soaps">Natural Soaps</a>
+                        <a href="shop.html?category=Conscious Living" class="subcategory-item" data-category="Conscious Living" data-subcategory="Eco Products">Eco Products</a>
+                        <a href="shop.html?category=Conscious Living" class="subcategory-item" data-category="Conscious Living" data-subcategory="Organic Personal Care">Organic Personal Care</a>
+                        <a href="shop.html?category=Conscious Living" class="subcategory-item" data-category="Conscious Living" data-subcategory="Herbal Products">Herbal Products</a>
                     </div>
                 </div>
             </div>
@@ -299,6 +306,7 @@
     </div>
 
     <script src="unified-auth.js?v=2"></script>
+    <script src="data-manager.js"></script>
     <script src="order-management.js?v=2"></script>
     <script src="product-display.js?v=2"></script>
     <script src="script.js?v=2"></script>

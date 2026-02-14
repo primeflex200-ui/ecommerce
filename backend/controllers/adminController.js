@@ -31,43 +31,24 @@ const getDashboard = async (req, res) => {
     }
 };
 
+// Vendor Management
 const createVendor = async (req, res) => {
-    const client = await db.getClient();
-    
     try {
-        await client.query('BEGIN');
+        const { vendorName, businessName, phone, address } = req.body;
 
-        const { vendorName, businessName, email, password, phone } = req.body;
-
-        const existingUser = await client.query('SELECT * FROM users WHERE email = $1', [email]);
-        if (existingUser.rows.length > 0) {
-            await client.query('ROLLBACK');
-            return res.status(400).json({ error: 'Email already exists' });
+        if (!vendorName || !businessName) {
+            return res.status(400).json({ error: 'Vendor name and business name are required' });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const userResult = await client.query(
-            'INSERT INTO users (email, password, role, first_name) VALUES ($1, $2, $3, $4) RETURNING id',
-            [email, hashedPassword, 'vendor', vendorName]
+        const result = await db.query(
+            'INSERT INTO vendors (vendor_name, business_name, phone, address, status) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+            [vendorName, businessName, phone, address, 'active']
         );
 
-        const userId = userResult.rows[0].id;
-
-        const vendorResult = await client.query(
-            'INSERT INTO vendors (user_id, vendor_name, business_name, email, phone) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            [userId, vendorName, businessName, email, phone]
-        );
-
-        await client.query('COMMIT');
-
-        res.status(201).json({ success: true, vendor: vendorResult.rows[0] });
+        res.status(201).json({ success: true, vendor: result.rows[0] });
     } catch (error) {
-        await client.query('ROLLBACK');
         console.error('Create vendor error:', error);
         res.status(500).json({ error: 'Failed to create vendor' });
-    } finally {
-        client.release();
     }
 };
 
@@ -81,6 +62,71 @@ const getAllVendors = async (req, res) => {
     }
 };
 
+const getVendorById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await db.query('SELECT * FROM vendors WHERE id = $1', [id]);
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Vendor not found' });
+        }
+
+        res.json({ success: true, vendor: result.rows[0] });
+    } catch (error) {
+        console.error('Get vendor error:', error);
+        res.status(500).json({ error: 'Failed to fetch vendor' });
+    }
+};
+
+const updateVendor = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { vendorName, businessName, phone, address, status } = req.body;
+
+        const result = await db.query(
+            'UPDATE vendors SET vendor_name = $1, business_name = $2, phone = $3, address = $4, status = $5, updated_at = NOW() WHERE id = $6 RETURNING *',
+            [vendorName, businessName, phone, address, status, id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Vendor not found' });
+        }
+
+        res.json({ success: true, vendor: result.rows[0] });
+    } catch (error) {
+        console.error('Update vendor error:', error);
+        res.status(500).json({ error: 'Failed to update vendor' });
+    }
+};
+
+const deleteVendor = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Check if vendor has products
+        const productsCheck = await db.query('SELECT COUNT(*) as count FROM products WHERE vendor_id = $1', [id]);
+        const productCount = parseInt(productsCheck.rows[0].count);
+
+        if (productCount > 0) {
+            return res.status(400).json({ 
+                error: 'Cannot delete vendor with existing products. Please reassign or delete products first.' 
+            });
+        }
+
+        const result = await db.query('DELETE FROM vendors WHERE id = $1 RETURNING *', [id]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Vendor not found' });
+        }
+
+        res.json({ success: true, message: 'Vendor deleted successfully' });
+    } catch (error) {
+        console.error('Delete vendor error:', error);
+        res.status(500).json({ error: 'Failed to delete vendor' });
+    }
+};
+
+// Order Management
 const getAllOrders = async (req, res) => {
     try {
         const { status, page = 1, limit = 20 } = req.query;
@@ -96,7 +142,7 @@ const getAllOrders = async (req, res) => {
         query += ' ORDER BY created_at DESC';
         
         const offset = (page - 1) * limit;
-        query += ` LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+        query += ` LIMIT ${params.length + 1} OFFSET ${params.length + 2}`;
         params.push(limit, offset);
 
         const result = await db.query(query, params);
@@ -136,6 +182,7 @@ const updateOrderStatus = async (req, res) => {
     }
 };
 
+// Product Management
 const getAllProducts = async (req, res) => {
     try {
         const result = await db.query(
@@ -152,6 +199,9 @@ module.exports = {
     getDashboard,
     createVendor,
     getAllVendors,
+    getVendorById,
+    updateVendor,
+    deleteVendor,
     getAllOrders,
     updateOrderStatus,
     getAllProducts

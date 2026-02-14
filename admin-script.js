@@ -1,22 +1,27 @@
-// ===== TEMPORARY RESET LOGIC - REMOVE MILK AND CURD PRODUCTS =====
-// This will force clear old product data and reinitialize without milk/curd
+// ===== CLEAR ALL DUMMY DATA =====
+// This will clear all dummy products and orders on first load
 (function() {
-    const RESET_FLAG = 'products_reset_v2';
+    const CLEAR_FLAG = 'dummy_data_cleared_v1';
     
-    // Check if reset has already been done
-    if (!localStorage.getItem(RESET_FLAG)) {
-        console.log('Admin: Resetting products - removing milk and curd...');
+    // Check if clearing has already been done
+    if (!localStorage.getItem(CLEAR_FLAG)) {
+        console.log('Admin: Clearing all dummy data...');
         
-        // Clear old product data
+        // Clear products and orders
         localStorage.removeItem('products');
+        localStorage.removeItem('orders');
         
-        // Mark reset as complete
-        localStorage.setItem(RESET_FLAG, 'true');
+        // Initialize with empty arrays
+        localStorage.setItem('products', JSON.stringify([]));
+        localStorage.setItem('orders', JSON.stringify([]));
         
-        console.log('Admin: Products reset complete.');
+        // Mark clearing as complete
+        localStorage.setItem(CLEAR_FLAG, 'true');
+        
+        console.log('Admin: Dummy data cleared. System ready for real data.');
     }
 })();
-// ===== END RESET LOGIC =====
+// ===== END CLEAR LOGIC =====
 
 // Check admin authentication
 function checkAdminAuth() {
@@ -28,43 +33,16 @@ function checkAdminAuth() {
     }
 }
 
-// Initialize admin data
+// Initialize admin data - NO DEFAULT PRODUCTS
 function initializeAdminData() {
-    // Initialize products if not exists
+    // Initialize products as empty array if not exists
     if (!localStorage.getItem('products')) {
-        const defaultProducts = [
-            { id: 1, name: "Premium A2 Ghee", category: "Bakery & Dairy", subcategory: "Ghee", price: 899, stock: 50, unit: "kg", image: "images/ghee.png", description: "Pure A2 cow ghee", inStock: true },
-            { id: 3, name: "Gomutra Ark", category: "Conscious Living", subcategory: "Herbal Products", price: 299, stock: 30, unit: "liter", image: "images/gomutra.png", description: "Traditional wellness", inStock: true },
-            { id: 4, name: "Organic Dung Cakes", category: "Home Food", subcategory: "Traditional Foods", price: 199, stock: 0, unit: "piece", image: "images/cow-dung.png", description: "Eco-friendly", inStock: false },
-            { id: 5, name: "Panchagavya Mix", category: "Special Categories", subcategory: "Combo Packs", price: 499, stock: 25, unit: "kg", image: "images/panchagavya.png", description: "Complete wellness", inStock: true },
-            { id: 7, name: "Fresh Buttermilk", category: "Snacks & More", subcategory: "Traditional Snacks", price: 45, stock: 60, unit: "liter", image: "images/buttermilk.png", description: "Refreshing", inStock: true },
-            { id: 8, name: "Fresh Paneer", category: "Bakery & Dairy", subcategory: "Paneer", price: 350, stock: 40, unit: "kg", image: "images/paneer.png", description: "Fresh paneer", inStock: true },
-            { id: 9, name: "Pure Gomutra", category: "Conscious Living", subcategory: "Herbal Products", price: 150, stock: 20, unit: "liter", image: "images/gomutra.png", description: "Pure wellness", inStock: true }
-        ];
-        localStorage.setItem('products', JSON.stringify(defaultProducts));
+        localStorage.setItem('products', JSON.stringify([]));
     }
     
-    // Initialize orders if not exists
+    // Initialize orders as empty array if not exists
     if (!localStorage.getItem('orders')) {
-        const defaultOrders = [
-            { 
-                id: "CB" + Date.now().toString().slice(-6), 
-                customerName: "Rahul Sharma", 
-                items: [{ name: "Premium A2 Ghee", quantity: 2, price: 899 }], 
-                total: 1798, 
-                date: new Date().toLocaleDateString(), 
-                status: "Pending" 
-            },
-            { 
-                id: "CB" + (Date.now() - 100000).toString().slice(-6), 
-                customerName: "Priya Patel", 
-                items: [{ name: "Premium A2 Ghee", quantity: 2, price: 899 }], 
-                total: 1798, 
-                date: new Date().toLocaleDateString(), 
-                status: "Shipped" 
-            }
-        ];
-        localStorage.setItem('orders', JSON.stringify(defaultOrders));
+        localStorage.setItem('orders', JSON.stringify([]));
     }
 }
 
@@ -76,7 +54,7 @@ function handleAdminLogin(event) {
     const password = document.getElementById('admin-password').value;
     const messageEl = document.getElementById('login-message');
     
-    if (email === 'admin@cb.com' && password === 'admin123') {
+    if (email === 'ruthvik@blockfortrust.com' && password === 'Saireddy880227') {
         localStorage.setItem('adminLoggedIn', 'true');
         messageEl.textContent = 'Login successful! Redirecting...';
         messageEl.className = 'login-message success';
@@ -92,7 +70,18 @@ function handleAdminLogin(event) {
 
 // Admin Logout
 function adminLogout() {
-    logout();
+    // Show confirmation dialog
+    const confirmLogout = confirm('Are you sure you want to logout?\n\nClick OK to logout or Cancel to stay.');
+    
+    if (confirmLogout) {
+        // User clicked Yes/OK - logout and redirect to homepage
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('adminLoggedIn');
+        window.location.href = 'index.html';
+    }
+    // If user clicked No/Cancel, do nothing (stay on current page)
 }
 
 // Vendor Logout
@@ -137,14 +126,14 @@ function loadVendorsList() {
     if (!tbody) return;
     
     tbody.innerHTML = vendors.map(vendor => {
-        const vendorProducts = products.filter(p => p.vendor_id === vendor.id);
+        const vendorProducts = products.filter(p => p.vendorId === vendor.id);
         const createdDate = vendor.createdAt ? new Date(vendor.createdAt).toLocaleDateString() : 'N/A';
         
         return `
             <tr>
                 <td>${vendor.vendorName}</td>
                 <td>${vendor.businessName}</td>
-                <td>${vendor.email}</td>
+                <td>${vendor.phone || 'N/A'}</td>
                 <td><span class="status-badge in-stock">${vendor.status || 'active'}</span></td>
                 <td>${vendorProducts.length}</td>
                 <td>${createdDate}</td>
@@ -166,41 +155,17 @@ function closeAddVendorModal() {
     document.getElementById('add-vendor-message').className = 'form-message';
 }
 
-// Handle add vendor
+// Handle add vendor (Supplier record only - no user account)
 function handleAddVendor(event) {
     event.preventDefault();
     
     const vendorName = document.getElementById('new-vendor-name').value;
     const businessName = document.getElementById('new-business-name').value;
-    const email = document.getElementById('new-vendor-email').value;
-    const password = document.getElementById('new-vendor-password').value;
     const phone = document.getElementById('new-vendor-phone').value;
+    const address = document.getElementById('new-vendor-address').value;
     const messageEl = document.getElementById('add-vendor-message');
     
-    // Check if email already exists
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    if (users.find(u => u.email === email)) {
-        messageEl.textContent = 'Email already exists';
-        messageEl.className = 'form-message error';
-        return;
-    }
-    
-    // Create user account
-    const userId = 'vendor-' + Date.now();
-    const newUser = {
-        id: userId,
-        email: email,
-        password: password,
-        role: 'vendor',
-        firstName: vendorName.split(' ')[0],
-        lastName: vendorName.split(' ').slice(1).join(' ') || '',
-        vendorId: null // Will be set after vendor creation
-    };
-    
-    users.push(newUser);
-    localStorage.setItem('users', JSON.stringify(users));
-    
-    // Create vendor record
+    // Create vendor record (supplier only)
     const vendors = JSON.parse(localStorage.getItem('vendors')) || [];
     const newVendorId = vendors.length > 0 ? Math.max(...vendors.map(v => v.id)) + 1 : 1;
     
@@ -208,19 +173,15 @@ function handleAddVendor(event) {
         id: newVendorId,
         vendorName: vendorName,
         businessName: businessName,
-        email: email,
-        userId: userId,
         phone: phone || '',
+        address: address || '',
         status: 'active',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
     };
     
     vendors.push(newVendor);
     localStorage.setItem('vendors', JSON.stringify(vendors));
-    
-    // Update user with vendorId
-    newUser.vendorId = newVendorId;
-    localStorage.setItem('users', JSON.stringify(users));
     
     messageEl.textContent = 'Vendor created successfully!';
     messageEl.className = 'form-message success';
@@ -369,13 +330,19 @@ function handleAddProduct(event) {
     const name = document.getElementById('product-name').value;
     const category = document.getElementById('product-category').value;
     const subcategory = document.getElementById('product-subcategory').value;
-    const price = parseInt(document.getElementById('product-price').value);
+    const price = parseFloat(document.getElementById('product-price').value);
     const stock = parseInt(document.getElementById('product-stock').value);
+    const unit = document.getElementById('product-unit').value;
+    const unitQuantity = parseFloat(document.getElementById('product-unit-quantity').value);
     const description = document.getElementById('product-description').value;
+    const vendorId = document.getElementById('product-vendor').value;
     const messageEl = document.getElementById('form-message');
     
     const products = JSON.parse(localStorage.getItem('products')) || [];
     const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+    
+    // Create display unit (e.g., "500ml", "1kg", "2 pieces")
+    const displayUnit = unitQuantity + unit;
     
     const newProduct = {
         id: newId,
@@ -384,9 +351,14 @@ function handleAddProduct(event) {
         subcategory,
         price,
         stock,
+        unit,
+        unitQuantity,
+        displayUnit,
+        vendorId: vendorId || null,
         image: imageBase64 || 'images/placeholder.png',
         description,
-        inStock: stock > 0
+        inStock: stock > 0,
+        createdAt: new Date().toISOString()
     };
     
     products.push(newProduct);
@@ -705,59 +677,9 @@ initializeOrderItems();
 // ===== VENDOR LOGIN =====
 function handleVendorLogin(event) {
     event.preventDefault();
-    
-    const email = document.getElementById('vendor-email').value;
-    const password = document.getElementById('vendor-password').value;
-    const messageEl = document.getElementById('login-message');
-    
-    const vendors = JSON.parse(localStorage.getItem('vendors')) || [];
-    const vendor = vendors.find(v => v.email === email && v.password === password);
-    
-    if (vendor) {
-        localStorage.setItem('vendorLoggedIn', 'true');
-        localStorage.setItem('currentVendorId', vendor.id);
-        localStorage.setItem('currentVendorName', vendor.name);
-        messageEl.textContent = 'Login successful! Redirecting...';
-        messageEl.className = 'login-message success';
-        
-        setTimeout(() => {
-            window.location.href = 'vendor-dashboard.html';
-        }, 1000);
-    } else {
-        messageEl.textContent = 'Invalid credentials';
-        messageEl.className = 'login-message error';
-    }
-}
+// Vendor authentication functions removed - vendors are now managed as supplier records only
 
-// Check vendor authentication
-function checkVendorAuth() {
-    const isLoggedIn = localStorage.getItem('vendorLoggedIn');
-    const currentPage = window.location.pathname;
-    
-    if (!isLoggedIn && (currentPage.includes('vendor-dashboard') || currentPage.includes('vendor-products') || currentPage.includes('vendor-orders'))) {
-        window.location.href = 'vendor-login.html';
-    }
-}
-
-// Vendor Logout
-function vendorLogout() {
-    localStorage.removeItem('vendorLoggedIn');
-    localStorage.removeItem('currentVendorId');
-    localStorage.removeItem('currentVendorName');
-    window.location.href = 'vendor-login.html';
-}
-
-// Display vendor name in sidebar
-function displayVendorName() {
-    const vendorNameEl = document.getElementById('vendor-name-display');
-    if (vendorNameEl) {
-        const vendorName = localStorage.getItem('currentVendorName') || 'Vendor';
-        vendorNameEl.textContent = vendorName;
-    }
-}
-
-// ===== VENDOR DASHBOARD =====
-function loadVendorDashboard() {
+// ===== CATEGORY MANAGEMENT FUNCTIONS =====
     console.log('=== Loading Vendor Dashboard ===');
     
     const currentUser = getCurrentUser();
@@ -1393,8 +1315,14 @@ loadOrdersTable = function() {
                     <option value="Delivered" ${deliveryStatus === 'Delivered' ? 'selected' : ''}>Delivered</option>
                 </select>
             </td>
+            <td>
+                ${deliveryStatus === 'Delivered' ? 
+                    `<button class="btn-delete" onclick="deleteOrder(${index})" style="background: #dc3545; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer; font-size: 0.9rem;">Delete</button>` : 
+                    `<span style="color: #999; font-size: 0.85rem;">Available after delivery</span>`
+                }
+            </td>
         </tr>
-    `}).join('') || '<tr><td colspan="7">No orders yet</td></tr>';
+    `}).join('') || '<tr><td colspan="8">No orders yet</td></tr>';
 };
 
 // Update admin delivery date
@@ -1412,6 +1340,8 @@ function updateAdminDeliveryStatus(index, status) {
     if (orders[index]) {
         orders[index].deliveryStatus = status;
         localStorage.setItem('orders', JSON.stringify(orders));
+        // Reload table to update delete button visibility
+        loadOrdersTable();
     }
 }
 

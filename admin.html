@@ -5,6 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login - CB Organic Products</title>
     <link rel="stylesheet" href="admin-styles.css">
+    <script>
+        // Check if admin is already logged in BEFORE page loads
+        (function() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            const userRole = localStorage.getItem('userRole');
+            if (isLoggedIn === 'true' && userRole === 'admin') {
+                window.location.replace('admin-dashboard.html');
+            } else {
+                // Not logged in, redirect to main login page
+                window.location.replace('login.html');
+            }
+        })();
+    </script>
 </head>
 <body class="admin-login-page">
     <!-- Back to Website Button -->
@@ -39,15 +52,11 @@
             </form>
             
             <div class="login-footer">
-                <p>Demo Credentials: admin@cb.com / admin123</p>
+                <p>Demo Credentials: ruthvik@blockfortrust.com / Saireddy880227</p>
             </div>
         </div>
     </div>
     
-    <script>
-        // Redirect to unified login
-        window.location.href = 'login.html';
-    </script>
     <script src="unified-auth.js"></script>
     <script src="admin-script.js"></script>
 </body>

@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Organic Cow Products - Pure & Natural</title>
     <link rel="stylesheet" href="styles.css?v=3">
+    <script>
+        // Check if admin is already logged in BEFORE page loads
+        (function() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            const userRole = localStorage.getItem('userRole');
+            if (isLoggedIn === 'true' && userRole === 'admin') {
+                window.location.replace('admin-dashboard.html');
+            }
+        })();
+    </script>
 </head>
 <body>
     <!-- Top Announcement Bar -->
@@ -85,9 +95,6 @@
                     <div id="role-buttons" style="display: none; margin-top: 1rem;">
                         <button type="button" id="admin-enter-btn" class="btn btn-primary auth-submit" onclick="enterAsAdmin()" style="display: none; margin-bottom: 0.5rem;">
                             Enter as Admin
-                        </button>
-                        <button type="button" id="vendor-enter-btn" class="btn btn-primary auth-submit" onclick="enterAsVendor()" style="display: none; margin-bottom: 0.5rem;">
-                            Enter as Vendor
                         </button>
                     </div>
                     
@@ -204,9 +211,36 @@
     <section class="featured-products">
         <div class="container">
             <h2 class="section-title">Featured Products</h2>
-            <div class="product-grid" id="home-product-grid">
-                <!-- Products will be dynamically loaded -->
+            
+            <!-- Category Navigation Buttons -->
+            <div class="category-filters" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 20px 0 30px 0;">
+                <a href="shop.html" class="category-filter-btn" style="padding: 10px 20px; border: 2px solid #4a7c59; background: #4a7c59; color: white; border-radius: 25px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s; text-decoration: none; display: inline-block;">
+                    All Products
+                </a>
+                <a href="shop.html?category=Fruits & Vegetables" class="category-filter-btn" style="padding: 10px 20px; border: 2px solid #4a7c59; background: white; color: #4a7c59; border-radius: 25px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s; text-decoration: none; display: inline-block;">
+                    Fruits & Vegetables
+                </a>
+                <a href="shop.html?category=Daily Staples" class="category-filter-btn" style="padding: 10px 20px; border: 2px solid #4a7c59; background: white; color: #4a7c59; border-radius: 25px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s; text-decoration: none; display: inline-block;">
+                    Daily Staples
+                </a>
+                <a href="shop.html?category=Snacks & More" class="category-filter-btn" style="padding: 10px 20px; border: 2px solid #4a7c59; background: white; color: #4a7c59; border-radius: 25px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s; text-decoration: none; display: inline-block;">
+                    Snacks & More
+                </a>
+                <a href="shop.html?category=Bakery & Dairy" class="category-filter-btn" style="padding: 10px 20px; border: 2px solid #4a7c59; background: white; color: #4a7c59; border-radius: 25px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s; text-decoration: none; display: inline-block;">
+                    Bakery & Dairy
+                </a>
+                <a href="shop.html?category=Home Food" class="category-filter-btn" style="padding: 10px 20px; border: 2px solid #4a7c59; background: white; color: #4a7c59; border-radius: 25px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s; text-decoration: none; display: inline-block;">
+                    Home Food
+                </a>
+                <a href="shop.html?category=Special Categories" class="category-filter-btn" style="padding: 10px 20px; border: 2px solid #4a7c59; background: white; color: #4a7c59; border-radius: 25px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s; text-decoration: none; display: inline-block;">
+                    Special Categories
+                </a>
+                <a href="shop.html?category=Conscious Living" class="category-filter-btn" style="padding: 10px 20px; border: 2px solid #4a7c59; background: white; color: #4a7c59; border-radius: 25px; cursor: pointer; font-size: 14px; font-weight: 600; transition: all 0.3s; text-decoration: none; display: inline-block;">
+                    Conscious Living
+                </a>
             </div>
+            
+            <!-- No products displayed on homepage, just category links -->
         </div>
     </section>
 
@@ -283,6 +317,7 @@
     </footer>
 
     <script src="unified-auth.js?v=2"></script>
+    <script src="data-manager.js"></script>
     <script src="order-management.js?v=2"></script>
     <script src="product-display.js?v=2"></script>
     <script src="script.js?v=2"></script>

@@ -67,20 +67,11 @@ const login = async (req, res) => {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
-        let vendorId = null;
-        if (user.role === 'vendor') {
-            const vendorResult = await db.query('SELECT id FROM vendors WHERE user_id = $1', [user.id]);
-            if (vendorResult.rows.length > 0) {
-                vendorId = vendorResult.rows[0].id;
-            }
-        }
-
         const token = jwt.sign(
             { 
                 userId: user.id, 
                 email: user.email, 
-                role: user.role,
-                vendorId: vendorId
+                role: user.role
             },
             process.env.JWT_SECRET,
             { expiresIn: process.env.JWT_EXPIRES_IN }
@@ -93,8 +84,7 @@ const login = async (req, res) => {
                 email: user.email,
                 role: user.role,
                 firstName: user.first_name,
-                lastName: user.last_name,
-                vendorId: vendorId
+                lastName: user.last_name
             },
             token
         });

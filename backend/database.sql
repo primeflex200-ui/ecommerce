@@ -15,10 +15,8 @@ CREATE TABLE users (
 
 CREATE TABLE vendors (
     id SERIAL PRIMARY KEY,
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
     vendor_name VARCHAR(255) NOT NULL,
     business_name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
     phone VARCHAR(20),
     address TEXT,
     status VARCHAR(20) DEFAULT 'active',

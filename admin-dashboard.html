@@ -62,7 +62,7 @@
                             <tr>
                                 <th>Vendor Name</th>
                                 <th>Business Name</th>
-                                <th>Email</th>
+                                <th>Phone</th>
                                 <th>Status</th>
                                 <th>Products</th>
                                 <th>Created</th>
@@ -93,26 +93,25 @@
                 <div class="form-group">
                     <label>Vendor Name *</label>
                     <input type="text" id="new-vendor-name" required placeholder="e.g., John Smith">
+                    <small>Supplier/Vendor contact name</small>
                 </div>
                 
                 <div class="form-group">
                     <label>Business Name *</label>
                     <input type="text" id="new-business-name" required placeholder="e.g., Organic Farm Co.">
-                </div>
-                
-                <div class="form-group">
-                    <label>Email *</label>
-                    <input type="email" id="new-vendor-email" required placeholder="vendor@example.com">
-                </div>
-                
-                <div class="form-group">
-                    <label>Password *</label>
-                    <input type="password" id="new-vendor-password" required minlength="6" placeholder="Minimum 6 characters">
+                    <small>Company or business name</small>
                 </div>
                 
                 <div class="form-group">
                     <label>Phone</label>
                     <input type="tel" id="new-vendor-phone" placeholder="10 digit number">
+                    <small>Contact phone number (optional)</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>Address</label>
+                    <textarea id="new-vendor-address" rows="3" placeholder="Business address"></textarea>
+                    <small>Business address (optional)</small>
                 </div>
                 
                 <div class="form-message" id="add-vendor-message"></div>

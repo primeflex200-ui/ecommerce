@@ -1,0 +1,51 @@
+========================================
+CB ORGANIC STORE - ADMIN LOGIN FIX
+========================================
+
+ADMIN CREDENTIALS:
+Email: ruthvik@blockfortrust.com
+Password: Saireddy880227
+
+========================================
+STEP 1: RESET CACHE (DO THIS FIRST!)
+========================================
+
+Open ONE of these files in your browser:
+→ reset-admin.html (instant reset)
+→ clear-cache.html (visual reset)
+
+This will clear old data and set new credentials.
+
+========================================
+STEP 2: LOGIN
+========================================
+
+1. Open: index.html or shop.html
+2. Click "Sign In" button
+3. Enter email: ruthvik@blockfortrust.com
+4. Enter password: Saireddy880227
+5. "Enter as Admin" button will appear
+6. Click it to access admin dashboard
+
+========================================
+TROUBLESHOOTING
+========================================
+
+If still showing "Invalid email or password":
+1. Close ALL browser tabs
+2. Open reset-admin.html again
+3. Try logging in again
+
+If "Enter as Admin" button not showing:
+1. Make sure you typed the EXACT email
+2. Password is case-sensitive
+3. Try in incognito/private mode
+
+========================================
+QUICK TEST
+========================================
+
+Open: test-admin-login.html
+This will test if credentials are working.
+
+========================================

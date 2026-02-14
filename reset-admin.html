@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reset Admin - CB Organic Store</title>
+    <meta http-equiv="refresh" content="0">
+</head>
+<body>
+    <script>
+        // Immediately clear and reset
+        localStorage.clear();
+        
+        // Set new admin credentials
+        localStorage.setItem('users', JSON.stringify([
+            {
+                id: 'admin-001',
+                email: 'ruthvik@blockfortrust.com',
+                password: 'Saireddy880227',
+                role: 'admin',
+                firstName: 'Ruthvik',
+                lastName: 'Admin'
+            },
+            {
+                id: 'customer-001',
+                email: 'customer@cb.com',
+                password: 'customer123',
+                role: 'customer',
+                firstName: 'John',
+                lastName: 'Doe'
+            }
+        ]));
+        
+        // Redirect immediately
+        alert('Admin credentials reset!\n\nEmail: ruthvik@blockfortrust.com\nPassword: Saireddy880227\n\nClick OK to go to login page.');
+        window.location.href = 'index.html';
+    </script>
+</body>
+</html>

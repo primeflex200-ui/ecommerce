@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Setup - CB Organic Store</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2e7d32 0%, #66bb6a 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #2e7d32;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .step {
+            background: #f5f5f5;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #2e7d32;
+        }
+        .step h2 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+        .credentials {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .credentials h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        .credential-item {
+            background: white;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .big-button {
+            display: block;
+            width: 100%;
+            padding: 20px;
+            background: #2e7d32;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: bold;
+            margin: 15px 0;
+            transition: background 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        .big-button:hover {
+            background: #1b5e20;
+        }
+        .big-button.secondary {
+            background: #757575;
+        }
+        .big-button.secondary:hover {
+            background: #616161;
+        }
+        .warning {
+            background: #ffebee;
+            border-left: 5px solid #f44336;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .info {
+            background: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Admin Login Setup</h1>
+        <p class="subtitle">Follow these steps to access the admin dashboard</p>
+        
+        <div class="credentials">
+            <h3>📋 Your Admin Credentials</h3>
+            <div class="credential-item">
+                Email: ruthvik@blockfortrust.com
+            </div>
+            <div class="credential-item">
+                Password: Saireddy880227
+            </div>
+        </div>
+        
+        <div class="warning">
+            <strong>⚠️ IMPORTANT:</strong> You must reset the cache first before logging in!
+        </div>
+        
+        <div class="step">
+            <h2>Step 1: Reset Cache (Required!)</h2>
+            <p>Click this button to clear old data and set new admin credentials:</p>
+            <button class="big-button" onclick="resetNow()">🔄 RESET CACHE NOW</button>
+            <div class="info">
+                <strong>What this does:</strong>
+                <ul>
+                    <li>Clears all old cached data</li>
+                    <li>Sets new admin credentials</li>
+                    <li>Prepares system for login</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="step">
+            <h2>Step 2: Test Credentials (Optional)</h2>
+            <p>Verify that the credentials are working correctly:</p>
+            <a href="test-admin-login.html" class="big-button secondary">🧪 TEST CREDENTIALS</a>
+        </div>
+        
+        <div class="step">
+            <h2>Step 3: Login to Admin Dashboard</h2>
+            <p>After resetting cache, go to the homepage and login:</p>
+            <a href="index.html" class="big-button">🏠 GO TO HOMEPAGE & LOGIN</a>
+            <div class="success">
+                <strong>✓ What to do on homepage:</strong>
+                <ul>
+                    <li>Click "Sign In" button</li>
+                    <li>Enter email: ruthvik@blockfortrust.com</li>
+                    <li>Enter password: Saireddy880227</li>
+                    <li>"Enter as Admin" button will appear</li>
+                    <li>Click it to access admin dashboard</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="info">
+            <strong>💡 Troubleshooting:</strong>
+            <ul>
+                <li>If you see "Invalid email or password" → Click "RESET CACHE NOW" button above</li>
+                <li>If "Enter as Admin" button doesn't appear → Make sure you typed the exact email</li>
+                <li>Still having issues? → Try in incognito/private browsing mode</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        function resetNow() {
+            if (confirm('This will clear all cached data and set new admin credentials.\n\nClick OK to continue.')) {
+                // Clear localStorage
+                localStorage.clear();
+                
+                // Set new credentials
+                localStorage.setItem('users', JSON.stringify([
+                    {
+                        id: 'admin-001',
+                        email: 'ruthvik@blockfortrust.com',
+                        password: 'Saireddy880227',
+                        role: 'admin',
+                        firstName: 'Ruthvik',
+                        lastName: 'Admin'
+                    },
+                    {
+                        id: 'customer-001',
+                        email: 'customer@cb.com',
+                        password: 'customer123',
+                        role: 'customer',
+                        firstName: 'John',
+                        lastName: 'Doe'
+                    }
+                ]));
+                
+                alert('✅ Cache reset successfully!\n\nAdmin credentials are now active:\nEmail: ruthvik@blockfortrust.com\nPassword: Saireddy880227\n\nClick OK to go to homepage and login.');
+                
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+</body>
+</html>

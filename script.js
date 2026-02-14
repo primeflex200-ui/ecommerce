@@ -860,6 +860,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ===== ROLE-BASED LOGIN DETECTION =====
 
+// Hardcoded admin credentials (for prototype only)
+const ADMIN_EMAIL = 'ruthvik@blockfortrust.com';
+const ADMIN_PASSWORD = 'Saireddy880227';
+
 // Check user role as they type
 function checkUserRole() {
     const email = document.getElementById('signin-email').value.trim();
@@ -870,7 +874,13 @@ function checkUserRole() {
         return;
     }
     
-    // Check if credentials match any user
+    // Check hardcoded admin first
+    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+        showRoleButtons('admin');
+        return;
+    }
+    
+    // Check if credentials match any user in localStorage
     const users = JSON.parse(localStorage.getItem('users')) || [];
     const user = users.find(u => u.email === email && u.password === password);
     
@@ -885,10 +895,9 @@ function checkUserRole() {
 function showRoleButtons(role) {
     const roleButtonsDiv = document.getElementById('role-buttons');
     const adminBtn = document.getElementById('admin-enter-btn');
-    const vendorBtn = document.getElementById('vendor-enter-btn');
     const defaultBtn = document.getElementById('default-signin-btn');
     
-    if (!roleButtonsDiv || !adminBtn || !vendorBtn || !defaultBtn) return;
+    if (!roleButtonsDiv || !adminBtn || !defaultBtn) return;
     
     // Hide default sign in button
     defaultBtn.style.display = 'none';
@@ -899,10 +908,6 @@ function showRoleButtons(role) {
     // Show appropriate button based on role
     if (role === 'admin') {
         adminBtn.style.display = 'block';
-        vendorBtn.style.display = 'none';
-    } else if (role === 'vendor') {
-        adminBtn.style.display = 'none';
-        vendorBtn.style.display = 'block';
     } else {
         // Customer - hide role buttons, show default
         hideRoleButtons();
@@ -913,14 +918,12 @@ function showRoleButtons(role) {
 function hideRoleButtons() {
     const roleButtonsDiv = document.getElementById('role-buttons');
     const adminBtn = document.getElementById('admin-enter-btn');
-    const vendorBtn = document.getElementById('vendor-enter-btn');
     const defaultBtn = document.getElementById('default-signin-btn');
     
-    if (!roleButtonsDiv || !adminBtn || !vendorBtn || !defaultBtn) return;
+    if (!roleButtonsDiv || !adminBtn || !defaultBtn) return;
     
     roleButtonsDiv.style.display = 'none';
     adminBtn.style.display = 'none';
-    vendorBtn.style.display = 'none';
     defaultBtn.style.display = 'block';
 }
 
@@ -930,6 +933,24 @@ function enterAsAdmin() {
     const password = document.getElementById('signin-password').value.trim();
     const messageEl = document.getElementById('signin-message');
     
+    // Check hardcoded admin credentials first
+    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+        // Store session data
+        localStorage.setItem('currentUser', email);
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('userRole', 'admin');
+        
+        messageEl.textContent = 'Logging in as Admin...';
+        messageEl.className = 'auth-message success';
+        messageEl.style.display = 'block';
+        
+        setTimeout(() => {
+            window.location.href = 'admin-dashboard.html';
+        }, 1000);
+        return;
+    }
+    
+    // Fallback to localStorage users
     const users = JSON.parse(localStorage.getItem('users')) || [];
     const user = users.find(u => u.email === email && u.password === password && u.role === 'admin');
     
@@ -953,48 +974,7 @@ function enterAsAdmin() {
     }
 }
 
-// Enter as Vendor
-function enterAsVendor() {
-    const email = document.getElementById('signin-email').value.trim();
-    const password = document.getElementById('signin-password').value.trim();
-    const messageEl = document.getElementById('signin-message');
-    
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    const user = users.find(u => u.email === email && u.password === password && u.role === 'vendor');
-    
-    if (user) {
-        // Store session data
-        localStorage.setItem('currentUser', JSON.stringify(user));
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('userRole', 'vendor');
-        
-        // Get vendor data
-        const vendors = JSON.parse(localStorage.getItem('vendors')) || [];
-        const vendor = vendors.find(v => v.userId === user.id || v.email === user.email);
-        
-        if (vendor) {
-            localStorage.setItem('currentVendorId', vendor.id);
-            localStorage.setItem('currentVendorName', vendor.vendorName);
-            localStorage.setItem('vendorLoggedIn', 'true');
-            
-            messageEl.textContent = 'Logging in as Vendor...';
-            messageEl.className = 'auth-message success';
-            messageEl.style.display = 'block';
-            
-            setTimeout(() => {
-                window.location.href = 'vendor-dashboard.html';
-            }, 1000);
-        } else {
-            messageEl.textContent = 'Vendor account not found';
-            messageEl.className = 'auth-message error';
-            messageEl.style.display = 'block';
-        }
-    } else {
-        messageEl.textContent = 'Invalid vendor credentials';
-        messageEl.className = 'auth-message error';
-        messageEl.style.display = 'block';
-    }
-}
+// Vendor login removed - vendors are now managed as supplier records in admin panel only
 
 // Update the existing handleSignIn to work with customers
 const originalHandleSignIn = window.handleSignIn;
@@ -1005,6 +985,15 @@ window.handleSignIn = function(event) {
     const password = document.getElementById('signin-password').value.trim();
     const messageEl = document.getElementById('signin-message');
     
+    // Check hardcoded admin - should not use regular sign in
+    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+        messageEl.textContent = 'Please use the "Enter as Admin" button';
+        messageEl.className = 'auth-message error';
+        messageEl.style.display = 'block';
+        return;
+    }
+    
+    // Check localStorage users
     const users = JSON.parse(localStorage.getItem('users')) || [];
     const user = users.find(u => u.email === email && u.password === password);
     
@@ -1024,7 +1013,7 @@ window.handleSignIn = function(event) {
                 updateUIForLoggedInUser();
             }, 1000);
         } else {
-            // Admin or Vendor - should use role-specific buttons
+            // Admin or other role - should use role-specific buttons
             messageEl.textContent = 'Please use the role-specific button to login';
             messageEl.className = 'auth-message error';
             messageEl.style.display = 'block';

@@ -28,14 +28,11 @@ CREATE TABLE users (
 -- ====================================================
 CREATE TABLE vendors (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    vendor_name VARCHAR(255) NOT NULL,
     business_name VARCHAR(255) NOT NULL,
-    business_address TEXT,
-    gst_number VARCHAR(50),
-    bank_account VARCHAR(50),
-    ifsc_code VARCHAR(20),
-    commission_rate DECIMAL(5,2) DEFAULT 10.00,
-    is_approved BOOLEAN DEFAULT false,
+    phone VARCHAR(20),
+    address TEXT,
+    status VARCHAR(20) DEFAULT 'active',
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -190,7 +187,6 @@ CREATE TABLE donations (
 -- ====================================================
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_role ON users(role);
-CREATE INDEX idx_vendors_user_id ON vendors(user_id);
 CREATE INDEX idx_products_vendor_id ON products(vendor_id);
 CREATE INDEX idx_products_category_id ON products(category_id);
 CREATE INDEX idx_products_is_active ON products(is_active);
@@ -204,18 +200,16 @@ CREATE INDEX idx_cart_user_id ON cart(user_id);
 -- SAMPLE DATA
 -- ====================================================
 
--- Insert Admin User (password: admin123)
+-- Insert Admin User (password: Saireddy880227)
+-- Note: In production, use properly hashed passwords with bcrypt
 INSERT INTO users (email, password, first_name, last_name, role) 
-VALUES ('admin@cb.com', '$2b$10$rKZLvVZjKqX8YqVqYqVqYeX8YqVqYqVqYqVqYqVqYqVqYqVqYqVqY', 'Admin', 'User', 'admin');
+VALUES ('ruthvik@blockfortrust.com', '$2b$10$rKZLvVZjKqX8YqVqYqVqYeX8YqVqYqVqYqVqYqVqYqVqYqVqYqVqY', 'Ruthvik', 'Admin', 'admin');
 
--- Insert Vendor User (password: vendor123)
-INSERT INTO users (email, password, first_name, last_name, role) 
-VALUES ('vendor@cb.com', '$2b$10$rKZLvVZjKqX8YqVqYqVqYeX8YqVqYqVqYqVqYqVqYqVqYqVqYqVqY', 'Vendor', 'One', 'vendor');
-
--- Insert Vendor Profile
-INSERT INTO vendors (user_id, business_name, business_address, is_approved)
-SELECT id, 'CB Organic Farm', 'Village Road, Organic Farm Area', true
-FROM users WHERE email = 'vendor@cb.com';
+-- Insert Sample Vendors (Supplier Records)
+INSERT INTO vendors (vendor_name, business_name, phone, address, status) 
+VALUES 
+('CB Organic Farm', 'CB Organic Farm Pvt Ltd', '9876543210', 'Village Road, Organic Farm Area', 'active'),
+('Fresh Dairy Co', 'Fresh Dairy Cooperative', '9876543211', 'Dairy Lane, Farm District', 'active');
 
 -- Insert Sample Category
 INSERT INTO categories (name, slug, description) 
@@ -272,13 +266,12 @@ CREATE TRIGGER update_addresses_updated_at BEFORE UPDATE ON addresses FOR EACH R
 CREATE OR REPLACE VIEW product_details AS
 SELECT 
     p.*,
-    v.business_name as vendor_name,
-    c.name as category_name,
-    u.email as vendor_email
+    v.vendor_name,
+    v.business_name,
+    c.name as category_name
 FROM products p
 LEFT JOIN vendors v ON p.vendor_id = v.id
-LEFT JOIN categories c ON p.category_id = c.id
-LEFT JOIN users u ON v.user_id = u.id;
+LEFT JOIN categories c ON p.category_id = c.id;
 
 -- View: Order details with items
 CREATE OR REPLACE VIEW order_summary AS

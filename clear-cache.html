@@ -1,17 +1,107 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Clear Cache</title>
-    <script>
-        // Clear localStorage
-        localStorage.clear();
-        
-        // Force reload
-        alert('Cache cleared! The page will now reload.');
-        window.location.href = 'shop.html?v=' + Date.now();
-    </script>
+    <title>Clearing Cache - CB Organic Store</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #2e7d32 0%, #66bb6a 100%);
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+        }
+        h1 { color: #2e7d32; margin-bottom: 20px; }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2e7d32;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .success {
+            color: #2e7d32;
+            font-size: 24px;
+            margin: 20px 0;
+        }
+        .info {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
 </head>
 <body>
-    <h1>Clearing cache...</h1>
+    <div class="container">
+        <h1>🔄 Clearing Cache...</h1>
+        <div class="spinner"></div>
+        <p id="status">Please wait...</p>
+        <div id="result"></div>
+    </div>
+    
+    <script>
+        // Auto-run on page load
+        window.onload = function() {
+            setTimeout(function() {
+                // Clear all localStorage
+                localStorage.clear();
+                
+                // Set new admin credentials
+                const users = [
+                    {
+                        id: 'admin-001',
+                        email: 'ruthvik@blockfortrust.com',
+                        password: 'Saireddy880227',
+                        role: 'admin',
+                        firstName: 'Ruthvik',
+                        lastName: 'Admin'
+                    },
+                    {
+                        id: 'customer-001',
+                        email: 'customer@cb.com',
+                        password: 'customer123',
+                        role: 'customer',
+                        firstName: 'John',
+                        lastName: 'Doe'
+                    }
+                ];
+                
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                // Show success
+                document.getElementById('status').innerHTML = '<div class="success">✅ Success!</div>';
+                document.getElementById('result').innerHTML = `
+                    <div class="info">
+                        <strong>Cache Cleared!</strong><br><br>
+                        New Admin Credentials:<br>
+                        Email: ruthvik@blockfortrust.com<br>
+                        Password: Saireddy880227<br><br>
+                        Redirecting to homepage in 3 seconds...
+                    </div>
+                `;
+                
+                // Redirect to homepage
+                setTimeout(function() {
+                    window.location.href = 'index.html';
+                }, 3000);
+            }, 1000);
+        };
+    </script>
 </body>
 </html>

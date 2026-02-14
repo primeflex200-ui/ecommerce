@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Admin Login - CB Organic</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #2e7d32;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            color: #333;
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 600px;
+            text-align: center;
+        }
+        h1 { color: #2e7d32; margin-bottom: 20px; }
+        .credentials {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 18px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        button {
+            background: #2e7d32;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover { background: #1b5e20; }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✅ Admin Login Fixed!</h1>
+        
+        <div class="success">
+            Hardcoded admin credentials are now active!
+        </div>
+        
+        <div class="credentials">
+            <strong>Email:</strong> ruthvik@blockfortrust.com<br>
+            <strong>Password:</strong> Saireddy880227
+        </div>
+        
+        <div class="info">
+            <strong>How it works now:</strong><br><br>
+            1. Go to homepage (index.html or shop.html)<br>
+            2. Click "Sign In"<br>
+            3. Enter the admin email and password above<br>
+            4. "Enter as Admin" button will appear<br>
+            5. Click it to access admin dashboard<br><br>
+            <strong>No cache clearing needed!</strong> The credentials are hardcoded in the JavaScript.
+        </div>
+        
+        <button onclick="window.location.href='index.html'">
+            🏠 Go to Homepage & Test Login
+        </button>
+        
+        <button onclick="window.location.href='shop.html'" style="background: #757575;">
+            🛒 Go to Shop & Test Login
+        </button>
+    </div>
+    
+    <script>
+        // Show confirmation
+        console.log('✅ Admin credentials hardcoded:');
+        console.log('Email: ruthvik@blockfortrust.com');
+        console.log('Password: Saireddy880227');
+        console.log('These credentials will work immediately without cache clearing!');
+    </script>
+</body>
+</html>

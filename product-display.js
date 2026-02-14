@@ -15,13 +15,30 @@ function loadProductsWithVendors() {
     if (products.length === 0) {
         const message = homeProductGrid ? 
             'No products available yet. Check back soon!' : 
-            'No products available yet. Admin or vendors need to add products.';
+            'No products available yet. Admin needs to add products.';
         DataManager.renderEmptyState(targetGrid, message, '📦');
         return;
     }
     
+    // Get category from URL parameter (only on shop page)
+    let filteredProducts = products;
+    if (productGrid && !homeProductGrid) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const categoryParam = urlParams.get('category');
+        
+        if (categoryParam) {
+            filteredProducts = products.filter(product => product.category === categoryParam);
+            
+            // If no products in this category, show message
+            if (filteredProducts.length === 0) {
+                DataManager.renderEmptyState(targetGrid, `No products found in "${categoryParam}" category.`, '🔍');
+                return;
+            }
+        }
+    }
+    
     // Limit to 4 products on home page
-    const displayProducts = homeProductGrid ? products.slice(0, 4) : products;
+    const displayProducts = homeProductGrid ? products.slice(0, 4) : filteredProducts;
     
     targetGrid.innerHTML = displayProducts.map(product => {
         // Find vendor for this product
@@ -40,6 +57,9 @@ function loadProductsWithVendors() {
         const stockClass = product.stock > 0 ? 'in-stock' : 'out-of-stock';
         const isAvailable = product.stock > 0;
         
+        // Display unit (e.g., "500ml", "1kg")
+        const unitDisplay = product.displayUnit || (product.unitQuantity ? product.unitQuantity + product.unit : product.unit || '');
+        
         return `
             <div class="product-card">
                 <img src="${product.image || 'images/placeholder.png'}" alt="${product.name}">
@@ -48,6 +68,7 @@ function loadProductsWithVendors() {
                     <div><strong>Business:</strong> ${vendorInfo.businessName}</div>
                 </div>
                 <h3>${product.name}</h3>
+                ${unitDisplay ? `<p style="color: #666; font-size: 0.9rem; margin: 0.3rem 0;">${unitDisplay}</p>` : ''}
                 <p class="price">₹${product.price}</p>
                 <div class="stock-status" style="margin: 0.5rem 0;">
                     <span class="status-badge ${stockClass}" style="padding: 0.3rem 0.8rem; border-radius: 15px; font-size: 0.8rem; font-weight: 600;">
@@ -132,9 +153,33 @@ function addToCartFromShop(productId) {
     addToCartWithQuantity(productId);
 }
 
+// Highlight active category on shop page
+function highlightActiveCategory() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoryParam = urlParams.get('category');
+    
+    if (!categoryParam) return;
+    
+    // Update page header if exists
+    const pageHeader = document.querySelector('.page-header h1');
+    if (pageHeader) {
+        pageHeader.textContent = categoryParam;
+    }
+    
+    // Highlight active category in navigation
+    const categoryLinks = document.querySelectorAll('.shop-category-nav .category-link');
+    categoryLinks.forEach(link => {
+        if (link.textContent.trim() === categoryParam) {
+            link.style.color = '#4a7c59';
+            link.style.fontWeight = 'bold';
+        }
+    });
+}
+
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
     if (document.querySelector('.product-grid') || document.getElementById('home-product-grid')) {
         loadProductsWithVendors();
+        highlightActiveCategory();
     }
 });
