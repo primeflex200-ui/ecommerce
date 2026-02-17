@@ -23,6 +23,19 @@
 })();
 // ===== END CLEAR LOGIC =====
 
+// Supabase client getter - returns window.supabase
+const getSupabase = () => window.supabase;
+// Create a proxy to access supabase
+const supabase = new Proxy({}, {
+    get: function(target, prop) {
+        if (!window.supabase) {
+            console.error('Supabase not initialized yet!');
+            return undefined;
+        }
+        return window.supabase[prop];
+    }
+});
+
 // Initialize admin data - NO DEFAULT PRODUCTS
 function initializeAdminData() {
     // Clear old localStorage data to prevent conflicts with Supabase
@@ -252,9 +265,16 @@ async function loadProductsTable() {
     
     console.log('Fetching products from Supabase...');
     
+    // Check if Supabase is available
+    if (typeof window.supabase === 'undefined') {
+        console.error('Supabase client not available!');
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: #d32f2f;">Database connection not available. Please refresh the page.</td></tr>';
+        return;
+    }
+    
     try {
         // Fetch products from Supabase
-        const { data: products, error } = await supabase
+        const { data: products, error } = await window.supabase
             .from('products')
             .select('*')
             .order('created_at', { ascending: false });
@@ -662,6 +682,11 @@ document.addEventListener('DOMContentLoaded', async function() {
         console.error('Supabase failed to initialize!');
         alert('Database connection failed. Please refresh the page.');
         return;
+    }
+    
+    // Create global shorthand reference
+    if (typeof supabase === 'undefined') {
+        window.supabase = window.supabase;
     }
     
     console.log('Supabase initialized successfully');
