@@ -8,6 +8,13 @@ async function loadProductsWithVendors() {
     const targetGrid = productGrid || homeProductGrid;
     if (!targetGrid) return;
     targetGrid.innerHTML = '<div style="text-align: center; padding: 2rem; color: #666;">Loading products...</div>';
+    
+    if (typeof window.supabase === 'undefined') {
+        console.error('Supabase not initialized');
+        targetGrid.innerHTML = '<div style="text-align: center; padding: 2rem; color: #d32f2f;">Database connection error. Please refresh the page.</div>';
+        return;
+    }
+    
     try {
         const { data: products, error } = await window.supabase
             .from('products')
@@ -176,8 +183,23 @@ function highlightActiveCategory() {
 }
 
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     if (document.querySelector('.product-grid') || document.getElementById('home-product-grid')) {
+        let retries = 0;
+        while (typeof window.supabase === 'undefined' && retries < 20) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            retries++;
+        }
+        
+        if (typeof window.supabase === 'undefined') {
+            console.error('Supabase failed to initialize');
+            const targetGrid = document.querySelector('.product-grid') || document.getElementById('home-product-grid');
+            if (targetGrid) {
+                targetGrid.innerHTML = '<div style="text-align: center; padding: 2rem; color: #d32f2f;">Database connection error. Please refresh the page.</div>';
+            }
+            return;
+        }
+        
         loadProductsWithVendors();
         highlightActiveCategory();
     }
