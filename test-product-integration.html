@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Product Integration</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .test-section {
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .success { color: #4caf50; }
+        .error { color: #f44336; }
+        button {
+            background: #4a7c59;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #3d6849;
+        }
+        #results {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Product Integration Test</h1>
+    <p>This page tests the Supabase product integration.</p>
+
+    <div class="test-section">
+        <h2>Test 1: Supabase Connection</h2>
+        <button onclick="testConnection()">Test Connection</button>
+        <div id="connection-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 2: Fetch Products</h2>
+        <button onclick="testFetchProducts()">Fetch Products</button>
+        <div id="products-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 3: Add Test Product</h2>
+        <button onclick="testAddProduct()">Add Test Product</button>
+        <div id="add-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 4: Database Schema</h2>
+        <button onclick="testSchema()">Check Schema</button>
+        <div id="schema-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Results</h2>
+        <div id="results"></div>
+    </div>
+
+    <script src="supabase-auth.js"></script>
+    <script>
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'success' ? '#4caf50' : type === 'error' ? '#f44336' : '#333';
+            results.innerHTML += `<span style="color: ${color}">[${timestamp}] ${message}</span>\n`;
+        }
+
+        async function testConnection() {
+            const resultDiv = document.getElementById('connection-result');
+            resultDiv.innerHTML = 'Testing...';
+            
+            try {
+                const { data, error } = await supabase.from('products').select('count');
+                
+                if (error) {
+                    resultDiv.innerHTML = `<span class="error">❌ Connection failed: ${error.message}</span>`;
+                    log(`Connection test failed: ${error.message}`, 'error');
+                } else {
+                    resultDiv.innerHTML = '<span class="success">✅ Connection successful!</span>';
+                    log('Supabase connection successful', 'success');
+                }
+            } catch (err) {
+                resultDiv.innerHTML = `<span class="error">❌ Error: ${err.message}</span>`;
+                log(`Connection error: ${err.message}`, 'error');
+            }
+        }
+
+        async function testFetchProducts() {
+            const resultDiv = document.getElementById('products-result');
+            resultDiv.innerHTML = 'Fetching...';
+            
+            try {
+                const { data: products, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) {
+                    resultDiv.innerHTML = `<span class="error">❌ Fetch failed: ${error.message}</span>`;
+                    log(`Fetch products failed: ${error.message}`, 'error');
+                } else {
+                    resultDiv.innerHTML = `<span class="success">✅ Found ${products.length} products</span>`;
+                    log(`Fetched ${products.length} products from database`, 'success');
+                    if (products.length > 0) {
+                        log(`Sample product: ${JSON.stringify(products[0], null, 2)}`);
+                    }
+                }
+            } catch (err) {
+                resultDiv.innerHTML = `<span class="error">❌ Error: ${err.message}</span>`;
+                log(`Fetch error: ${err.message}`, 'error');
+            }
+        }
+
+        async function testAddProduct() {
+            const resultDiv = document.getElementById('add-result');
+            resultDiv.innerHTML = 'Adding test product...';
+            
+            const testProduct = {
+                name: 'Test Product ' + Date.now(),
+                category: 'Daily Staples',
+                subcategory: 'Test',
+                price: 99.99,
+                stock: 10,
+                unit: 'kg',
+                unit_quantity: 1,
+                display_unit: '1kg',
+                image_url: 'images/placeholder.png',
+                description: 'This is a test product',
+                in_stock: true
+            };
+            
+            try {
+                const { data, error } = await supabase
+                    .from('products')
+                    .insert([testProduct])
+                    .select();
+                
+                if (error) {
+                    resultDiv.innerHTML = `<span class="error">❌ Add failed: ${error.message}</span>`;
+                    log(`Add product failed: ${error.message}`, 'error');
+                } else {
+                    resultDiv.innerHTML = '<span class="success">✅ Test product added successfully!</span>';
+                    log(`Test product added: ${data[0].name} (ID: ${data[0].id})`, 'success');
+                }
+            } catch (err) {
+                resultDiv.innerHTML = `<span class="error">❌ Error: ${err.message}</span>`;
+                log(`Add error: ${err.message}`, 'error');
+            }
+        }
+
+        async function testSchema() {
+            const resultDiv = document.getElementById('schema-result');
+            resultDiv.innerHTML = 'Checking schema...';
+            
+            try {
+                // Try to select all columns to see what exists
+                const { data, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .limit(1);
+                
+                if (error) {
+                    resultDiv.innerHTML = `<span class="error">❌ Schema check failed: ${error.message}</span>`;
+                    log(`Schema check failed: ${error.message}`, 'error');
+                } else {
+                    const columns = data.length > 0 ? Object.keys(data[0]) : [];
+                    resultDiv.innerHTML = `<span class="success">✅ Schema check complete</span>`;
+                    log(`Database columns: ${columns.join(', ')}`, 'success');
+                    
+                    // Check for required columns
+                    const required = ['id', 'name', 'category', 'price', 'stock', 'image_url', 'subcategory', 'unit', 'unit_quantity', 'display_unit', 'description', 'in_stock'];
+                    const missing = required.filter(col => !columns.includes(col));
+                    
+                    if (missing.length > 0) {
+                        log(`⚠️ Missing columns: ${missing.join(', ')}. Run migration script!`, 'error');
+                    } else {
+                        log('✅ All required columns present', 'success');
+                    }
+                }
+            } catch (err) {
+                resultDiv.innerHTML = `<span class="error">❌ Error: ${err.message}</span>`;
+                log(`Schema error: ${err.message}`, 'error');
+            }
+        }
+
+        // Auto-run connection test on load
+        window.addEventListener('DOMContentLoaded', () => {
+            log('Test page loaded. Click buttons to run tests.');
+            testConnection();
+        });
+    </script>
+</body>
+</html>

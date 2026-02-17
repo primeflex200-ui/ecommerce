@@ -79,31 +79,50 @@ function vendorLogout() {
     logout();
 }
 
-// Load Dashboard Data
-function loadDashboard() {
-    const products = JSON.parse(localStorage.getItem('products')) || [];
-    const orders = JSON.parse(localStorage.getItem('orders')) || [];
-    const vendors = JSON.parse(localStorage.getItem('vendors')) || [];
-    
-    const outOfStock = products.filter(p => !p.inStock || p.stock === 0).length;
-    
-    document.getElementById('total-products').textContent = products.length;
-    document.getElementById('total-vendors').textContent = vendors.length;
-    document.getElementById('total-orders').textContent = orders.length;
-    document.getElementById('out-of-stock').textContent = outOfStock;
-    
-    // Load vendors list
-    loadVendorsList();
-    
-    // Load recent orders
-    const recentOrdersList = document.getElementById('recent-orders-list');
-    if (recentOrdersList) {
-        const recentOrders = orders.slice(0, 5);
-        recentOrdersList.innerHTML = recentOrders.map(order => `
-            <div style="padding: 1rem; border-bottom: 1px solid #eee;">
-                <strong>${order.id}</strong> - ${order.customerName} - ₹${order.total} - ${order.status}
-            </div>
-        `).join('') || '<p>No orders yet</p>';
+// Load Dashboard Data from Supabase
+async function loadDashboard() {
+    try {
+        // Fetch products from Supabase
+        const { data: products, error: productsError } = await supabase
+            .from('products')
+            .select('*');
+        
+        // Fetch orders from Supabase
+        const { data: orders, error: ordersError } = await supabase
+            .from('orders')
+            .select('*');
+        
+        // Fetch vendors from Supabase
+        const { data: vendors, error: vendorsError } = await supabase
+            .from('vendors')
+            .select('*');
+        
+        const productsList = products || [];
+        const ordersList = orders || [];
+        const vendorsList = vendors || [];
+        
+        const outOfStock = productsList.filter(p => !p.in_stock || p.stock === 0).length;
+        
+        document.getElementById('total-products').textContent = productsList.length;
+        document.getElementById('total-vendors').textContent = vendorsList.length;
+        document.getElementById('total-orders').textContent = ordersList.length;
+        document.getElementById('out-of-stock').textContent = outOfStock;
+        
+        // Load vendors list
+        loadVendorsList();
+        
+        // Load recent orders
+        const recentOrdersList = document.getElementById('recent-orders-list');
+        if (recentOrdersList) {
+            const recentOrders = ordersList.slice(0, 5);
+            recentOrdersList.innerHTML = recentOrders.map(order => `
+                <div style="padding: 1rem; border-bottom: 1px solid #eee;">
+                    <strong>${order.id}</strong> - ${order.customer_email} - ₹${order.total} - ${order.status}
+                </div>
+            `).join('') || '<p>No orders yet</p>';
+        }
+    } catch (error) {
+        console.error('Error loading dashboard:', error);
     }
 }
 
@@ -182,48 +201,110 @@ function handleAddVendor(event) {
     }, 1500);
 }
 
-// Load Products Table
-function loadProductsTable() {
-    const products = JSON.parse(localStorage.getItem('products')) || [];
+// Load Products Table from Supabase
+async function loadProductsTable() {
     const tbody = document.getElementById('products-table-body');
     
     if (!tbody) return;
     
-    tbody.innerHTML = products.map(product => `
-        <tr>
-            <td><img src="${product.image}" alt="${product.name}" class="product-image-small"></td>
-            <td>${product.name}</td>
-            <td>${product.category}</td>
-            <td>₹${product.price}</td>
-            <td>${product.stock}</td>
-            <td><span class="status-badge ${product.inStock ? 'in-stock' : 'out-of-stock'}">${product.inStock ? 'In Stock' : 'Out of Stock'}</span></td>
-            <td>
-                <button class="action-btn btn-edit" onclick="editProduct(${product.id})">Edit</button>
-                <button class="action-btn btn-delete" onclick="deleteProduct(${product.id})">Delete</button>
-                <button class="action-btn btn-toggle" onclick="toggleStock(${product.id})">${product.inStock ? 'Mark Out' : 'Mark In'}</button>
-            </td>
-        </tr>
-    `).join('');
+    // Show loading state
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem;">Loading products...</td></tr>';
+    
+    try {
+        // Fetch products from Supabase
+        const { data: products, error } = await supabase
+            .from('products')
+            .select('*')
+            .order('created_at', { ascending: false });
+        
+        if (error) {
+            console.error('Error fetching products:', error);
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: #d32f2f;">Error loading products</td></tr>';
+            return;
+        }
+        
+        if (!products || products.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem;">No products yet</td></tr>';
+            return;
+        }
+        
+        tbody.innerHTML = products.map(product => `
+            <tr>
+                <td><img src="${product.image_url}" alt="${product.name}" class="product-image-small"></td>
+                <td>${product.name}</td>
+                <td>${product.category}</td>
+                <td>₹${product.price}</td>
+                <td>${product.stock}</td>
+                <td><span class="status-badge ${product.in_stock ? 'in-stock' : 'out-of-stock'}">${product.in_stock ? 'In Stock' : 'Out of Stock'}</span></td>
+                <td>
+                    <button class="action-btn btn-edit" onclick="editProduct('${product.id}')">Edit</button>
+                    <button class="action-btn btn-delete" onclick="deleteProduct('${product.id}')">Delete</button>
+                    <button class="action-btn btn-toggle" onclick="toggleStock('${product.id}')">${product.in_stock ? 'Mark Out' : 'Mark In'}</button>
+                </td>
+            </tr>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading products:', error);
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: #d32f2f;">Error loading products</td></tr>';
+    }
 }
 
-// Delete Product
-function deleteProduct(id) {
+// Delete Product from Supabase
+async function deleteProduct(id) {
     if (!confirm('Are you sure you want to delete this product?')) return;
     
-    let products = JSON.parse(localStorage.getItem('products')) || [];
-    products = products.filter(p => p.id !== id);
-    localStorage.setItem('products', JSON.stringify(products));
-    loadProductsTable();
+    try {
+        const { error } = await supabase
+            .from('products')
+            .delete()
+            .eq('id', id);
+        
+        if (error) {
+            console.error('Error deleting product:', error);
+            alert('Error deleting product: ' + error.message);
+            return;
+        }
+        
+        alert('Product deleted successfully!');
+        loadProductsTable();
+    } catch (error) {
+        console.error('Error deleting product:', error);
+        alert('Error deleting product. Please try again.');
+    }
 }
 
-// Toggle Stock Status
-function toggleStock(id) {
-    let products = JSON.parse(localStorage.getItem('products')) || [];
-    const product = products.find(p => p.id === id);
-    if (product) {
-        product.inStock = !product.inStock;
-        localStorage.setItem('products', JSON.stringify(products));
+// Toggle Stock Status in Supabase
+async function toggleStock(id) {
+    try {
+        // First, get the current product
+        const { data: product, error: fetchError } = await supabase
+            .from('products')
+            .select('in_stock')
+            .eq('id', id)
+            .single();
+        
+        if (fetchError) {
+            console.error('Error fetching product:', fetchError);
+            alert('Error updating stock status');
+            return;
+        }
+        
+        // Toggle the stock status
+        const { error: updateError } = await supabase
+            .from('products')
+            .update({ in_stock: !product.in_stock })
+            .eq('id', id);
+        
+        if (updateError) {
+            console.error('Error updating stock:', updateError);
+            alert('Error updating stock status');
+            return;
+        }
+        
         loadProductsTable();
+    } catch (error) {
+        console.error('Error toggling stock:', error);
+        alert('Error updating stock status. Please try again.');
     }
 }
 
@@ -313,8 +394,8 @@ function previewImage(event) {
     }
 }
 
-// Add Product
-function handleAddProduct(event) {
+// Add Product - Save to Supabase
+async function handleAddProduct(event) {
     event.preventDefault();
     
     const name = document.getElementById('product-name').value;
@@ -328,38 +409,54 @@ function handleAddProduct(event) {
     const vendorId = document.getElementById('product-vendor').value;
     const messageEl = document.getElementById('form-message');
     
-    const products = JSON.parse(localStorage.getItem('products')) || [];
-    const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+    // Show loading message
+    messageEl.textContent = 'Adding product...';
+    messageEl.className = 'form-message';
     
     // Create display unit (e.g., "500ml", "1kg", "2 pieces")
     const displayUnit = unitQuantity + unit;
     
     const newProduct = {
-        id: newId,
         name,
         category,
         subcategory,
         price,
         stock,
         unit,
-        unitQuantity,
-        displayUnit,
-        vendorId: vendorId || null,
-        image: imageBase64 || 'images/placeholder.png',
+        unit_quantity: unitQuantity,
+        display_unit: displayUnit,
+        vendor_id: vendorId || null,
+        image_url: imageBase64 || 'images/placeholder.png',
         description,
-        inStock: stock > 0,
-        createdAt: new Date().toISOString()
+        in_stock: stock > 0
     };
     
-    products.push(newProduct);
-    localStorage.setItem('products', JSON.stringify(products));
-    
-    messageEl.textContent = 'Product added successfully!';
-    messageEl.className = 'form-message success';
-    
-    setTimeout(() => {
-        window.location.href = 'admin-products.html';
-    }, 1500);
+    try {
+        // Insert product into Supabase
+        const { data, error } = await supabase
+            .from('products')
+            .insert([newProduct])
+            .select();
+        
+        if (error) {
+            console.error('Error adding product:', error);
+            messageEl.textContent = 'Error adding product: ' + error.message;
+            messageEl.className = 'form-message error';
+            return;
+        }
+        
+        messageEl.textContent = 'Product added successfully!';
+        messageEl.className = 'form-message success';
+        
+        setTimeout(() => {
+            window.location.href = 'admin-products.html';
+        }, 1500);
+        
+    } catch (error) {
+        console.error('Error adding product:', error);
+        messageEl.textContent = 'Error adding product. Please try again.';
+        messageEl.className = 'form-message error';
+    }
 }
 
 // Load Orders Table
@@ -1198,20 +1295,35 @@ function deleteVendor(id) {
     loadVendorsTable();
 }
 
-// Load vendors dropdown in add product page
-function loadVendorsDropdown() {
+// Load vendors dropdown from Supabase
+async function loadVendorsDropdown() {
     const vendorSelect = document.getElementById('product-vendor');
     if (!vendorSelect) return;
     
-    const vendors = JSON.parse(localStorage.getItem('vendors')) || [];
-    vendorSelect.innerHTML = '<option value="">Select Vendor</option>';
-    
-    vendors.forEach(vendor => {
-        const option = document.createElement('option');
-        option.value = vendor.id;
-        option.textContent = vendor.name;
-        vendorSelect.appendChild(option);
-    });
+    try {
+        const { data: vendors, error } = await supabase
+            .from('vendors')
+            .select('*')
+            .order('vendor_name');
+        
+        if (error) {
+            console.error('Error loading vendors:', error);
+            return;
+        }
+        
+        vendorSelect.innerHTML = '<option value="">Select Vendor</option>';
+        
+        if (vendors && vendors.length > 0) {
+            vendors.forEach(vendor => {
+                const option = document.createElement('option');
+                option.value = vendor.id;
+                option.textContent = vendor.vendor_name || vendor.business_name;
+                vendorSelect.appendChild(option);
+            });
+        }
+    } catch (error) {
+        console.error('Error loading vendors:', error);
+    }
 }
 
 // Update handleAddProduct to include vendor_id

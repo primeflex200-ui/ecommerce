@@ -38,9 +38,16 @@ CREATE TABLE products (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
     category TEXT,
+    subcategory TEXT,
     price NUMERIC(10,2) NOT NULL,
     stock INT NOT NULL DEFAULT 0,
+    unit TEXT,
+    unit_quantity NUMERIC(10,2),
+    display_unit TEXT,
+    vendor_id UUID REFERENCES vendors(id),
     image_url TEXT,
+    description TEXT,
+    in_stock BOOLEAN DEFAULT true,
     created_at TIMESTAMP DEFAULT NOW()
 );
 
