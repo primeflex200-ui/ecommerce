@@ -1498,7 +1498,12 @@ async function deleteVendor(id) {
 // Load vendors dropdown from Supabase
 async function loadVendorsDropdown() {
     const vendorSelect = document.getElementById('product-vendor');
-    if (!vendorSelect) return;
+    if (!vendorSelect) {
+        console.log('Vendor select element not found');
+        return;
+    }
+    
+    console.log('Loading vendors dropdown...');
     
     try {
         const { data: vendors, error } = await supabase
@@ -1511,6 +1516,8 @@ async function loadVendorsDropdown() {
             return;
         }
         
+        console.log('Vendors loaded:', vendors);
+        
         vendorSelect.innerHTML = '<option value="">Select Vendor</option>';
         
         if (vendors && vendors.length > 0) {
@@ -1519,7 +1526,10 @@ async function loadVendorsDropdown() {
                 option.value = vendor.id;
                 option.textContent = vendor.vendor_name || vendor.business_name;
                 vendorSelect.appendChild(option);
+                console.log('Added vendor option:', vendor.vendor_name || vendor.business_name);
             });
+        } else {
+            console.log('No vendors found in database');
         }
     } catch (error) {
         console.error('Error loading vendors:', error);
