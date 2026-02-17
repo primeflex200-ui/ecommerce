@@ -642,7 +642,7 @@ async function deleteOrder(orderId) {
 }
 
 // Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     const currentPage = window.location.pathname;
     
     // Check admin auth on all admin pages (handled by supabase-auth.js)
@@ -650,10 +650,27 @@ document.addEventListener('DOMContentLoaded', function() {
     
     initializeAdminData();
     
+    // Wait for Supabase to be ready
+    let retries = 0;
+    while (typeof window.supabase === 'undefined' && retries < 10) {
+        console.log('Waiting for Supabase to initialize...');
+        await new Promise(resolve => setTimeout(resolve, 100));
+        retries++;
+    }
+    
+    if (typeof window.supabase === 'undefined') {
+        console.error('Supabase failed to initialize!');
+        alert('Database connection failed. Please refresh the page.');
+        return;
+    }
+    
+    console.log('Supabase initialized successfully');
+    
     if (currentPage.includes('admin-dashboard.html')) {
         loadDashboard();
     } else if (currentPage.includes('admin-products.html')) {
-        loadProductsTable();
+        console.log('Loading products table...');
+        await loadProductsTable();
     } else if (currentPage.includes('admin-orders.html')) {
         loadOrdersTable();
     }

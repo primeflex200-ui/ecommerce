@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Products Fetch</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .test-section {
+            background: #f5f5f5;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+        }
+        .success { color: #2e7d32; }
+        .error { color: #d32f2f; }
+        pre {
+            background: #fff;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        button {
+            background: #4a7c59;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+        }
+        button:hover {
+            background: #3a6c49;
+        }
+    </style>
+</head>
+<body>
+    <h1>Product Fetch Diagnostic Tool</h1>
+    
+    <div class="test-section">
+        <h2>Step 1: Check Supabase Connection</h2>
+        <button onclick="testSupabaseConnection()">Test Connection</button>
+        <div id="connection-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Step 2: Fetch All Products</h2>
+        <button onclick="fetchAllProducts()">Fetch Products</button>
+        <div id="products-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Step 3: Check Products Table Structure</h2>
+        <button onclick="checkTableStructure()">Check Structure</button>
+        <div id="structure-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Step 4: Test Insert Product</h2>
+        <button onclick="testInsertProduct()">Insert Test Product</button>
+        <div id="insert-result"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-auth.js"></script>
+    <script>
+        async function testSupabaseConnection() {
+            const resultDiv = document.getElementById('connection-result');
+            resultDiv.innerHTML = '<p>Testing connection...</p>';
+            
+            try {
+                if (typeof window.supabase === 'undefined') {
+                    resultDiv.innerHTML = '<p class="error">❌ Supabase client not initialized!</p>';
+                    return;
+                }
+                
+                // Try to get session
+                const { data: { session }, error } = await window.supabase.auth.getSession();
+                
+                if (error) {
+                    resultDiv.innerHTML = `<p class="error">❌ Connection Error: ${error.message}</p>`;
+                    return;
+                }
+                
+                resultDiv.innerHTML = `
+                    <p class="success">✅ Supabase connection successful!</p>
+                    <p>Session: ${session ? 'Logged in as ' + session.user.email : 'Not logged in'}</p>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="error">❌ Error: ${error.message}</p>`;
+            }
+        }
+        
+        async function fetchAllProducts() {
+            const resultDiv = document.getElementById('products-result');
+            resultDiv.innerHTML = '<p>Fetching products...</p>';
+            
+            try {
+                const { data: products, error } = await window.supabase
+                    .from('products')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) {
+                    resultDiv.innerHTML = `
+                        <p class="error">❌ Error fetching products:</p>
+                        <pre>${JSON.stringify(error, null, 2)}</pre>
+                    `;
+                    return;
+                }
+                
+                if (!products || products.length === 0) {
+                    resultDiv.innerHTML = '<p class="error">⚠️ No products found in database</p>';
+                    return;
+                }
+                
+                resultDiv.innerHTML = `
+                    <p class="success">✅ Found ${products.length} product(s)!</p>
+                    <pre>${JSON.stringify(products, null, 2)}</pre>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="error">❌ Error: ${error.message}</p>`;
+            }
+        }
+        
+        async function checkTableStructure() {
+            const resultDiv = document.getElementById('structure-result');
+            resultDiv.innerHTML = '<p>Checking table structure...</p>';
+            
+            try {
+                // Try to select with all expected columns
+                const { data, error } = await window.supabase
+                    .from('products')
+                    .select('id, name, category, subcategory, price, stock, unit, unit_quantity, display_unit, vendor_id, image_url, description, in_stock, created_at')
+                    .limit(1);
+                
+                if (error) {
+                    resultDiv.innerHTML = `
+                        <p class="error">❌ Table structure issue:</p>
+                        <pre>${JSON.stringify(error, null, 2)}</pre>
+                        <p>This might mean some columns are missing. Run the migration SQL!</p>
+                    `;
+                    return;
+                }
+                
+                resultDiv.innerHTML = `
+                    <p class="success">✅ Table structure looks good!</p>
+                    <p>All expected columns are present.</p>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="error">❌ Error: ${error.message}</p>`;
+            }
+        }
+        
+        async function testInsertProduct() {
+            const resultDiv = document.getElementById('insert-result');
+            resultDiv.innerHTML = '<p>Inserting test product...</p>';
+            
+            try {
+                const testProduct = {
+                    name: 'Test Product ' + Date.now(),
+                    category: 'Daily Staples',
+                    subcategory: 'Test',
+                    price: 99.99,
+                    stock: 10,
+                    unit: 'kg',
+                    unit_quantity: 1,
+                    display_unit: '1kg',
+                    vendor_id: null,
+                    image_url: 'images/placeholder.png',
+                    description: 'This is a test product',
+                    in_stock: true
+                };
+                
+                const { data, error } = await window.supabase
+                    .from('products')
+                    .insert([testProduct])
+                    .select();
+                
+                if (error) {
+                    resultDiv.innerHTML = `
+                        <p class="error">❌ Error inserting product:</p>
+                        <pre>${JSON.stringify(error, null, 2)}</pre>
+                    `;
+                    return;
+                }
+                
+                resultDiv.innerHTML = `
+                    <p class="success">✅ Test product inserted successfully!</p>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                    <p>Now go to Product Management page and refresh to see it.</p>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="error">❌ Error: ${error.message}</p>`;
+            }
+        }
+        
+        // Auto-run connection test on load
+        window.addEventListener('DOMContentLoaded', () => {
+            testSupabaseConnection();
+        });
+    </script>
+</body>
+</html>
