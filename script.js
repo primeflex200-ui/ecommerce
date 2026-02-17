@@ -317,68 +317,117 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 // Display Orders
-function displayOrders() {
+async function displayOrders() {
     const ordersListContainer = document.getElementById('orders-list');
     
     if (!ordersListContainer) return;
     
-    // Get cart items as temporary orders
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
-    
-    if (cart.length === 0) {
-        ordersListContainer.innerHTML = `
-            <div class="empty-orders">
-                <h2>No Orders Yet</h2>
-                <p>You haven't placed any orders. Start shopping to see your orders here!</p>
-                <a href="shop.html" class="btn btn-primary">Start Shopping</a>
-            </div>
-        `;
-        return;
-    }
-    
-    // Create a temporary order from cart items
-    const orderDate = new Date().toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-    });
-    
-    let orderTotal = 0;
-    const orderItemsHTML = cart.map(item => {
-        const itemImage = item.image || productImages[item.id] || 'images/ghee.png';
-        const itemTotal = item.price * item.quantity;
-        orderTotal += itemTotal;
-        
-        return `
-            <div class="order-item">
-                <img src="${itemImage}" alt="${item.name}">
-                <div class="order-item-details">
-                    <h4>${item.name}</h4>
-                    <p class="order-item-quantity">Quantity: ${item.quantity}</p>
-                </div>
-                <div class="order-item-price">₹${itemTotal}</div>
-            </div>
-        `;
-    }).join('');
-    
+    // Show loading state
     ordersListContainer.innerHTML = `
-        <div class="order-card">
-            <div class="order-header">
-                <div>
-                    <div class="order-id">Order #CB${Date.now().toString().slice(-6)}</div>
-                    <div class="order-date">${orderDate}</div>
-                </div>
-                <div class="order-status pending">Pending</div>
-            </div>
-            <div class="order-items">
-                ${orderItemsHTML}
-            </div>
-            <div class="order-total">
-                <span class="order-total-label">Total:</span>
-                <span class="order-total-amount">₹${orderTotal}</span>
-            </div>
+        <div style="text-align: center; padding: 3rem;">
+            <p>Loading your orders...</p>
         </div>
     `;
+    
+    try {
+        // Get current user
+        const { data: { user } } = await window.supabase.auth.getUser();
+        
+        if (!user) {
+            ordersListContainer.innerHTML = `
+                <div class="empty-orders">
+                    <h2>Please Login</h2>
+                    <p>You need to login to view your orders.</p>
+                    <a href="index.html" class="btn btn-primary">Go to Home</a>
+                </div>
+            `;
+            return;
+        }
+        
+        // Fetch orders for this customer from Supabase
+        const { data: orders, error } = await window.supabase
+            .from('orders')
+            .select('*, order_items(*)')
+            .eq('customer_email', user.email)
+            .order('created_at', { ascending: false });
+        
+        if (error) {
+            console.error('Error fetching orders:', error);
+            ordersListContainer.innerHTML = `
+                <div class="empty-orders">
+                    <h2>Error Loading Orders</h2>
+                    <p>Unable to load your orders. Please try again later.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        if (!orders || orders.length === 0) {
+            ordersListContainer.innerHTML = `
+                <div class="empty-orders">
+                    <h2>No Orders Yet</h2>
+                    <p>You haven't placed any orders. Start shopping to see your orders here!</p>
+                    <a href="shop.html" class="btn btn-primary">Start Shopping</a>
+                </div>
+            `;
+            return;
+        }
+        
+        // Display orders
+        ordersListContainer.innerHTML = orders.map(order => {
+            const orderDate = new Date(order.created_at).toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            const orderItems = order.order_items || [];
+            const orderItemsHTML = orderItems.map(item => {
+                const itemTotal = item.price * item.quantity;
+                
+                return `
+                    <div class="order-item">
+                        <img src="images/ghee.png" alt="${item.product_name}">
+                        <div class="order-item-details">
+                            <h4>${item.product_name}</h4>
+                            <p class="order-item-quantity">Quantity: ${item.quantity}</p>
+                        </div>
+                        <div class="order-item-price">₹${itemTotal.toFixed(2)}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            const statusClass = order.status.toLowerCase();
+            
+            return `
+                <div class="order-card">
+                    <div class="order-header">
+                        <div>
+                            <div class="order-id">Order ${order.id}</div>
+                            <div class="order-date">${orderDate}</div>
+                        </div>
+                        <div class="order-status ${statusClass}">${order.status}</div>
+                    </div>
+                    <div class="order-items">
+                        ${orderItemsHTML}
+                    </div>
+                    <div class="order-total">
+                        <span class="order-total-label">Total:</span>
+                        <span class="order-total-amount">₹${parseFloat(order.total).toFixed(2)}</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+    } catch (error) {
+        console.error('Error displaying orders:', error);
+        ordersListContainer.innerHTML = `
+            <div class="empty-orders">
+                <h2>Error Loading Orders</h2>
+                <p>Unable to load your orders. Please try again later.</p>
+            </div>
+        `;
+    }
 }
 
 // Initialize orders page

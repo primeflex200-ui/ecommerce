@@ -503,7 +503,7 @@ async function loadOrdersTable() {
     if (!tbody) return;
     
     // Show loading state
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem;">Loading orders...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 2rem;">Loading orders...</td></tr>';
     
     try {
         // Fetch orders from Supabase
@@ -514,12 +514,12 @@ async function loadOrdersTable() {
         
         if (error) {
             console.error('Error fetching orders:', error);
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: #d32f2f;">Error loading orders</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 2rem; color: #d32f2f;">Error loading orders</td></tr>';
             return;
         }
         
         if (!orders || orders.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem;">No orders yet</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 2rem;">No orders yet</td></tr>';
             return;
         }
         
@@ -531,10 +531,11 @@ async function loadOrdersTable() {
             return `
             <tr>
                 <td>${order.id}</td>
-                <td>${order.customer_email || 'N/A'}</td>
                 <td>${itemsText || 'No items'}</td>
                 <td>₹${order.total}</td>
+                <td>N/A</td>
                 <td>${orderDate}</td>
+                <td>-</td>
                 <td>
                     <select class="status-select" onchange="updateOrderStatus('${order.id}', this.value)">
                         <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
@@ -553,7 +554,7 @@ async function loadOrdersTable() {
         `}).join('');
     } catch (error) {
         console.error('Error loading orders:', error);
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: #d32f2f;">Error loading orders</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 2rem; color: #d32f2f;">Error loading orders</td></tr>';
     }
 }
 

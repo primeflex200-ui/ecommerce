@@ -510,7 +510,7 @@ function closePaymentModal() {
 }
 
 // Process payment
-function processPayment() {
+async function processPayment() {
     if (!currentPaymentContext) return;
     
     const selectedMethod = document.querySelector('input[name="payment-method"]:checked').value;
@@ -523,13 +523,13 @@ function processPayment() {
     showPaymentLoader();
     
     // Simulate payment processing (2 seconds)
-    setTimeout(() => {
+    setTimeout(async () => {
         hidePaymentLoader();
         showPaymentSuccess();
         
         // Process based on context type
         if (currentPaymentContext.type === 'checkout') {
-            processCheckoutPayment(selectedMethod);
+            await processCheckoutPayment(selectedMethod);
         } else if (currentPaymentContext.type === 'donation') {
             processDonationPayment(selectedMethod);
         }
@@ -562,36 +562,67 @@ function showPaymentSuccess() {
 }
 
 // Process checkout payment
-function processCheckoutPayment(paymentMethod) {
+async function processCheckoutPayment(paymentMethod) {
     const orderData = currentPaymentContext.data;
     
-    const order = {
-        id: 'CB' + Date.now(),
-        items: orderData.items,
-        subtotal: orderData.total,
-        tax: orderData.total * 0.05,
-        shipping: 50,
-        total: orderData.finalTotal || (orderData.total + (orderData.total * 0.05) + 50),
-        customerName: orderData.customerName || 'Guest',
-        shippingAddress: orderData.shippingAddress || '',
-        paymentMethod: paymentMethod,
-        paymentStatus: 'Paid',
-        status: 'Pending',
-        date: new Date().toLocaleDateString(),
-        createdAt: new Date().toISOString()
-    };
+    const orderId = 'CB' + Date.now();
+    const finalTotal = orderData.finalTotal || (orderData.total + (orderData.total * 0.05) + 50);
     
-    // Save order
-    const orders = JSON.parse(localStorage.getItem('orders')) || [];
-    orders.push(order);
-    localStorage.setItem('orders', JSON.stringify(orders));
-    
-    // Clear cart
-    localStorage.setItem('cart', JSON.stringify([]));
-    
-    // Update cart count
-    if (typeof updateCartCount === 'function') {
-        updateCartCount();
+    try {
+        // Get current user email from Supabase session
+        const { data: { user } } = await window.supabase.auth.getUser();
+        const customerEmail = user?.email || orderData.email || 'guest@example.com';
+        
+        // Insert order into Supabase orders table
+        const { data: orderInserted, error: orderError } = await window.supabase
+            .from('orders')
+            .insert({
+                id: orderId,
+                customer_email: customerEmail,
+                total: finalTotal,
+                status: 'Pending'
+            })
+            .select()
+            .single();
+        
+        if (orderError) {
+            console.error('Error inserting order:', orderError);
+            alert('Failed to save order. Please try again.');
+            return;
+        }
+        
+        // Insert order items into Supabase order_items table
+        const orderItems = orderData.items.map(item => ({
+            order_id: orderId,
+            product_id: item.id || null,
+            product_name: item.name,
+            quantity: item.quantity,
+            price: item.price
+        }));
+        
+        const { error: itemsError } = await window.supabase
+            .from('order_items')
+            .insert(orderItems);
+        
+        if (itemsError) {
+            console.error('Error inserting order items:', itemsError);
+            alert('Failed to save order items. Please try again.');
+            return;
+        }
+        
+        console.log('Order saved successfully:', orderId);
+        
+        // Clear cart from localStorage
+        localStorage.setItem('cart', JSON.stringify([]));
+        
+        // Update cart count
+        if (typeof updateCartCount === 'function') {
+            updateCartCount();
+        }
+        
+    } catch (error) {
+        console.error('Error processing checkout:', error);
+        alert('Failed to process order. Please try again.');
     }
 }
 
