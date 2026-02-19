@@ -201,18 +201,6 @@ function switchTab(tab) {
     }
 }
 
-
-
-
-
-
-    } else {
-        profileBtn.innerHTML = `
-            <span class="nav-label">Login</span>
-        `;
-        profileBtn.onclick = openAuthModal;
-    }
-}
 function toggleProfileDropdown(event) {
     event.preventDefault();
     const dropdown = document.getElementById('profile-dropdown');
