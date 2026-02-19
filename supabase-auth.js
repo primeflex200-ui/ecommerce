@@ -451,6 +451,7 @@ function switchTab(tab) {
     }
 }
 async function enterAsAdmin() {
+    console.log('=== ENTER AS ADMIN CLICKED ===');
     try {
         const { data: { session } } = await supabaseClient.auth.getSession();
         console.log('enterAsAdmin - Session:', session);
@@ -475,6 +476,7 @@ async function enterAsAdmin() {
             // If profile doesn't exist or there's an error, still allow admin access for the admin email
             if (session.user.email === 'ruthvik@blockfortrust.com') {
                 console.log('Admin email detected - granting access');
+                closeAuthModal();
                 window.location.href = 'admin-dashboard.html';
                 return;
             }
@@ -484,6 +486,7 @@ async function enterAsAdmin() {
         
         if (profile && profile.role === 'admin') {
             console.log('Admin access granted - redirecting to dashboard');
+            closeAuthModal();
             window.location.href = 'admin-dashboard.html';
         } else {
             console.log('Access denied - role:', profile?.role);

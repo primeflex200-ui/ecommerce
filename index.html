@@ -95,7 +95,7 @@
                     
                     
                     <div id="role-buttons" style="display: none; margin-top: 1rem;">
-                        <button type="button" id="admin-enter-btn" class="btn btn-primary auth-submit" onclick="enterAsAdmin()" style="display: none; margin-bottom: 0.5rem;">
+                        <button type="button" id="admin-enter-btn" class="btn btn-primary auth-submit" onclick="event.preventDefault(); event.stopPropagation(); enterAsAdmin();" style="display: none; margin-bottom: 0.5rem;">
                             Enter as Admin
                         </button>
                     </div>
