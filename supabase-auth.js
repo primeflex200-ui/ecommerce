@@ -421,15 +421,12 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 
 function openAuthModal() {
-    const currentPage = window.location.pathname;
-    const isHomePage = currentPage === '/' || currentPage.endsWith('index.html') || currentPage === '/index.html';
-    if (!isHomePage) {
-        window.location.href = 'index.html';
-        return;
-    }
     const modal = document.getElementById('auth-modal');
     if (modal) {
         modal.style.display = 'block';
+    } else {
+        // If modal doesn't exist on current page, redirect to home
+        window.location.href = 'index.html';
     }
 }
 function closeAuthModal() {
