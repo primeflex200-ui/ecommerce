@@ -453,24 +453,45 @@ function switchTab(tab) {
 async function enterAsAdmin() {
     try {
         const { data: { session } } = await supabaseClient.auth.getSession();
+        console.log('enterAsAdmin - Session:', session);
+        
         if (!session) {
             alert('Session expired. Please login again.');
             return;
         }
-        const { data: profile } = await supabaseClient
+        
+        console.log('Checking profile for user:', session.user.id);
+        const { data: profile, error: profileError } = await supabaseClient
             .from('profiles')
             .select('role')
             .eq('id', session.user.id)
             .single();
+        
+        console.log('Profile data:', profile);
+        console.log('Profile error:', profileError);
+        
+        if (profileError) {
+            console.error('Profile fetch error:', profileError);
+            // If profile doesn't exist or there's an error, still allow admin access for the admin email
+            if (session.user.email === 'ruthvik@blockfortrust.com') {
+                console.log('Admin email detected - granting access');
+                window.location.href = 'admin-dashboard.html';
+                return;
+            }
+            alert('Failed to verify admin access. Please contact support.');
+            return;
+        }
+        
         if (profile && profile.role === 'admin') {
             console.log('Admin access granted - redirecting to dashboard');
             window.location.href = 'admin-dashboard.html';
         } else {
+            console.log('Access denied - role:', profile?.role);
             alert('Access denied. Admin privileges required.');
         }
     } catch (error) {
         console.error('Enter as admin error:', error);
-        alert('Failed to verify admin access');
+        alert('Failed to verify admin access: ' + error.message);
     }
 }
 
