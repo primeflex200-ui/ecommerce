@@ -370,6 +370,40 @@ function previewImage(event) {
 }
 
 
+async function loadVendorsDropdown() {
+    const vendorSelect = document.getElementById('product-vendor');
+    if (!vendorSelect) return;
+    
+    try {
+        const { data: vendors, error } = await window.supabase
+            .from('vendors')
+            .select('*')
+            .order('vendor_name');
+        
+        if (error) {
+            console.error('Error loading vendors:', error);
+            return;
+        }
+        
+        vendorSelect.innerHTML = '<option value="">Select Vendor</option>';
+        
+        if (vendors && vendors.length > 0) {
+            vendors.forEach(vendor => {
+                const option = document.createElement('option');
+                option.value = vendor.id;
+                option.textContent = `${vendor.vendor_name} - ${vendor.business_name}`;
+                vendorSelect.appendChild(option);
+            });
+            console.log('Loaded', vendors.length, 'vendors into dropdown');
+        } else {
+            console.log('No vendors found');
+        }
+    } catch (error) {
+        console.error('Error loading vendors dropdown:', error);
+    }
+}
+
+
 async function handleAddProduct(event) {
     event.preventDefault();
     
@@ -762,10 +796,24 @@ function showMessage(message, type) {
 
 
 if (window.location.pathname.includes('admin-add-product.html')) {
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', async function() {
         initializeCategories();
         loadCategoriesDropdown();
         displayCategoriesList();
+        
+        // Wait for Supabase to initialize
+        let retries = 0;
+        while (typeof window.supabase === 'undefined' && retries < 20) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            retries++;
+        }
+        
+        if (typeof window.supabase !== 'undefined') {
+            await loadVendorsDropdown();
+        } else {
+            console.error('Supabase not initialized - vendors dropdown not loaded');
+        }
+        
         const categoryInput = document.getElementById('new-category-input');
         if (categoryInput) {
             categoryInput.addEventListener('keypress', function(e) {
