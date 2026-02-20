@@ -209,9 +209,16 @@ async function loadProductsTable() {
             .from('products')
             .select('*')
             .order('created_at', { ascending: false });
+        
+        console.log('Supabase response:', { products, error });
+        
         if (error) {
             console.error('Error fetching products:', error);
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: #d32f2f;">Error loading products: ' + error.message + '</td></tr>';
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 2rem; color: #d32f2f;">
+                Error loading products: ${error.message}<br>
+                <small>Error code: ${error.code || 'N/A'}</small><br>
+                <small>Hint: ${error.hint || 'Check if the products table exists in Supabase'}</small>
+            </td></tr>`;
             return;
         }
         console.log('Products fetched:', products ? products.length : 0);
@@ -221,7 +228,7 @@ async function loadProductsTable() {
         }
         tbody.innerHTML = products.map(product => `
             <tr>
-                <td><img src="${product.image_url}" alt="${product.name}" class="product-image-small"></td>
+                <td><img src="${product.image_url || 'images/placeholder.png'}" alt="${product.name}" class="product-image-small" onerror="this.src='images/placeholder.png'"></td>
                 <td>${product.name}</td>
                 <td>${product.category}</td>
                 <td>₹${product.price}</td>
@@ -234,10 +241,10 @@ async function loadProductsTable() {
                 </td>
             </tr>
         `).join('');
-        console.log('Products table loaded successfully');
+        console.log('Products table loaded successfully with', products.length, 'products');
     } catch (error) {
         console.error('Error loading products:', error);
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: #d32f2f;">Error loading products</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem; color: #d32f2f;">Error loading products: ' + error.message + '</td></tr>';
     }
 }
 
