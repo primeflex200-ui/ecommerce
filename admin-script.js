@@ -520,9 +520,9 @@ async function handleAddProduct(event) {
         document.getElementById('image-preview').innerHTML = '';
         imageBase64 = '';
         
-        // Redirect to products page with cache buster
+        // Redirect to dashboard with cache buster
         setTimeout(() => {
-            window.location.href = 'admin-products.html?refresh=' + Date.now();
+            window.location.href = 'admin-dashboard.html?refresh=' + Date.now();
         }, 1500);
     } catch (error) {
         console.error('Exception adding product:', error);
