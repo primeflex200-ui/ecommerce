@@ -173,7 +173,18 @@ async function handleSignIn(event) {
             if (profile && profile.role === 'admin') {
                 console.log('User is admin - showing admin button in modal');
                 if (roleButtons) roleButtons.style.display = 'block';
-                if (adminEnterBtn) adminEnterBtn.style.display = 'block';
+                if (adminEnterBtn) {
+                    adminEnterBtn.style.display = 'block';
+                    // Remove any existing event listeners and add a new one
+                    const newBtn = adminEnterBtn.cloneNode(true);
+                    adminEnterBtn.parentNode.replaceChild(newBtn, adminEnterBtn);
+                    newBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Admin button clicked - calling enterAsAdmin');
+                        enterAsAdmin();
+                    });
+                }
                 if (defaultSigninBtn) defaultSigninBtn.style.display = 'none';
             } else {
                 console.log('User is customer - redirecting to home');
