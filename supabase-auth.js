@@ -131,6 +131,11 @@ async function handleSignIn(event) {
         console.log('Signin response:', { data, error });
         if (error) {
             console.error('Signin error:', error);
+            if (error.message.includes('Email not confirmed')) {
+                messageEl.textContent = 'Please check your email and confirm your account before signing in. Check spam folder if needed.';
+                messageEl.className = 'auth-message error';
+                return;
+            }
             throw error;
         }
         if (data.user && data.session) {
