@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Supabase Connection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .test-box {
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #4a7c59;
+        }
+        .success {
+            border-left-color: #4caf50;
+            background: #e8f5e9;
+        }
+        .error {
+            border-left-color: #f44336;
+            background: #ffebee;
+        }
+        button {
+            background: #4a7c59;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #3a6c49;
+        }
+        pre {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        h1 {
+            color: #4a7c59;
+        }
+        .status {
+            font-weight: bold;
+            font-size: 18px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔌 Supabase Connection Test</h1>
+    
+    <div class="test-box">
+        <h2>Connection Details</h2>
+        <p><strong>Project URL:</strong> https://blsgyybaevuytmgpljyk.supabase.co</p>
+        <p><strong>Status:</strong> <span id="connection-status">Not tested yet</span></p>
+    </div>
+
+    <div>
+        <button onclick="testConnection()">1. Test Connection</button>
+        <button onclick="testTables()">2. Check Tables</button>
+        <button onclick="testCategories()">3. Check Categories</button>
+        <button onclick="testInsertProduct()">4. Test Insert Product</button>
+        <button onclick="testFetchProducts()">5. Fetch Products</button>
+    </div>
+
+    <div id="results"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://blsgyybaevuytmgpljyk.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJsc2d5eWJhZXZ1eXRtZ3BsanlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3NjcyMjYsImV4cCI6MjA4NzM0MzIyNn0.G4gvoW-_7DxQ1y28oZEHS7OIVpsyHTlZewV02Th_meU';
+        
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        function showResult(title, content, isSuccess = true) {
+            const resultsDiv = document.getElementById('results');
+            const resultBox = document.createElement('div');
+            resultBox.className = `test-box ${isSuccess ? 'success' : 'error'}`;
+            resultBox.innerHTML = `
+                <h3>${title}</h3>
+                <pre>${content}</pre>
+            `;
+            resultsDiv.appendChild(resultBox);
+        }
+
+        async function testConnection() {
+            document.getElementById('connection-status').textContent = 'Testing...';
+            try {
+                const { data, error } = await supabaseClient.auth.getSession();
+                
+                if (error) {
+                    document.getElementById('connection-status').textContent = '❌ Failed';
+                    showResult('❌ Connection Test Failed', JSON.stringify(error, null, 2), false);
+                } else {
+                    document.getElementById('connection-status').textContent = '✅ Connected';
+                    showResult('✅ Connection Successful', 'Supabase client is working correctly!', true);
+                }
+            } catch (error) {
+                document.getElementById('connection-status').textContent = '❌ Error';
+                showResult('❌ Connection Error', error.message, false);
+            }
+        }
+
+        async function testTables() {
+            try {
+                const tables = ['products', 'vendors', 'categories', 'orders', 'order_items', 'profiles'];
+                let results = 'Checking tables:\n\n';
+                
+                for (const table of tables) {
+                    const { data, error } = await supabaseClient
+                        .from(table)
+                        .select('*')
+                        .limit(1);
+                    
+                    if (error) {
+                        results += `❌ ${table}: ${error.message}\n`;
+                    } else {
+                        results += `✅ ${table}: Table exists\n`;
+                    }
+                }
+                
+                showResult('Tables Check', results, true);
+            } catch (error) {
+                showResult('❌ Tables Check Failed', error.message, false);
+            }
+        }
+
+        async function testCategories() {
+            try {
+                const { data: categories, error } = await supabaseClient
+                    .from('categories')
+                    .select('*');
+                
+                if (error) {
+                    showResult('❌ Categories Check Failed', JSON.stringify(error, null, 2), false);
+                } else {
+                    showResult('✅ Categories Found', 
+                        `Found ${categories.length} categories:\n\n` + 
+                        categories.map(c => `- ${c.name}`).join('\n'), 
+                        true
+                    );
+                }
+            } catch (error) {
+                showResult('❌ Categories Error', error.message, false);
+            }
+        }
+
+        async function testInsertProduct() {
+            try {
+                const testProduct = {
+                    name: 'Test Product ' + Date.now(),
+                    category: 'Daily Staples',
+                    subcategory: 'Test',
+                    price: 99.99,
+                    stock: 10,
+                    unit: 'kg',
+                    unit_quantity: 1,
+                    display_unit: '1kg',
+                    image_url: 'images/placeholder.png',
+                    description: 'This is a test product',
+                    in_stock: true
+                };
+                
+                const { data, error } = await supabaseClient
+                    .from('products')
+                    .insert([testProduct])
+                    .select();
+                
+                if (error) {
+                    showResult('❌ Insert Product Failed', JSON.stringify(error, null, 2), false);
+                } else {
+                    showResult('✅ Product Inserted Successfully', 
+                        'Product created:\n\n' + JSON.stringify(data[0], null, 2), 
+                        true
+                    );
+                }
+            } catch (error) {
+                showResult('❌ Insert Error', error.message, false);
+            }
+        }
+
+        async function testFetchProducts() {
+            try {
+                const { data: products, error } = await supabaseClient
+                    .from('products')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) {
+                    showResult('❌ Fetch Products Failed', JSON.stringify(error, null, 2), false);
+                } else {
+                    showResult('✅ Products Fetched Successfully', 
+                        `Found ${products.length} products:\n\n` + 
+                        JSON.stringify(products, null, 2), 
+                        true
+                    );
+                }
+            } catch (error) {
+                showResult('❌ Fetch Error', error.message, false);
+            }
+        }
+
+        window.onload = function() {
+            console.log('Supabase client initialized');
+            testConnection();
+        };
+    </script>
+</body>
+</html>
